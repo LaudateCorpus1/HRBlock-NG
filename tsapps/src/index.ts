@@ -1,1 +1,3 @@
-console.log('Hello typescript!!!')
+
+let a: number = 10;
+a ="hello";

@@ -226,7 +226,7 @@ TS is not compititor or replacer for javascript but it complements js.
 
 Type scrit is a typed superset of javascript that compiles to plain javascript
 
-                  any browser,an host, any os, any device
+                  any browser,any host, any os, any device
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -312,7 +312,506 @@ I m going to automate typescript compilation using npm script.
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-ECMA 6 features + Type System + OO Features
+ECMA 6 features + Type System + OO Features= Type script:
+.........................................................
+
+Typescript compiler(Transpiler): 
+   Transpiler means source code to source code conversion -  ts -js
+
+syntax
+
+  tsc --compileroptions filename
+
+
+compiler options can be supplied in line or in a file(tsconfig.json)
+
+Use case:
+
+Separate sourcode and compiled code into different directories.
+
+source code
+ src
+   -index.ts
+
+ build
+    -index.js
+
+how to tell the compiler to place compiled code into build folder.
+
+compiler options:
+
+ syntax
+
+  tsc --compileroptions filename
+
+  tsc --outDir build   src/index.ts
+
+
+
+{
+  "name": "mytsapps",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build" : "tsc --outDir build   src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^3.9.5"
+  }
+}
+
+********************************************************************************************
+How to compile the code automatically ,without compiling code manually?
+ we compiler option 
+   --watch
+
+
+ "scripts": {
+    "build" : "tsc --watch --outDir build   src/index.ts"
+  }
+/////////////////
+**************************************************************************************
+
+what if i want to add more and more compiler options
+
+
+tsc --watch --outDir build  --options --options  src/index.ts
+  
+ This is not scaleable, and maintainable. , if configuration grows.
+
+Solution : 
+ we need to create simple ts config file where you can place all configurations.
+
+create file called
+ tsconfig.json outside src folder, where we can tell all compiler options
+
+
+{
+    "compilerOptions": {
+        "outDir": "build",
+        "watch": true
+    },
+    "files": [
+        "src/index.ts"
+    ]
+}
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+ES 6 core concepts:
+
+Variable delcaration;
+
+var - es 5
+let  - es6 
+const - es6
+
+var is not block scoped and let and const is block scoped.
+
+In ES6 APPS  let and const are recommended.
+
+The problems with ES 6:
+
+When es6 was introduced, the node and browsers vendors were not ready to accept
+es6 keywords
+
+ let ,const never work in older node and browsers.
+
+that time browers were supported only ES 5 version of js.
+
+browsers were not ready that time, but develoers felt,and supported lot on es6.
+
+Then how to run es 6 code on browsers which dont support.
+
+The birth of "Transpilers"  : a special compilers which converts es6 to es5,
+
+developer write code in es6 ---->transpiler-->es 5
+
+eg: babel.js 
+ higer version -to lower version
+
+eg : tsc
+ es6 to es5
+ +
+ type verification
+
+         "ts compiler by default converts es6 code into es5."
+
+let---------var
+
+what if i dont to convert es6 to es 5, i want to keep same version?
+
+{
+    "compilerOptions": {
+        "outDir": "build",
+        "watch": true,
+        "target": "ES6"
+    },
+    "files": [
+        "src/index.ts"
+    ]
+}
+
+Literals:
+ since js is dynamic typed, types of the variable is identified during runtime based on literal(values)
+
+1.number
+2.string
+3.boolean
+4.undefined
+5.NaN
+6.infinity
+7.null
+8.function
+9.object
+
+
+1.strings:
+
+1.16 bit unicode charaters.
+
+2.strings can be declared inside  "" or ''  or ``(back-tick) es 6 feature
+   "" : inspired from java and c++
+   '' : js specific notation.
+
+
+//string
+let firstName = "Subramanian";
+let lastName = 'Murugan'
+//console.log("First Name" + firstName);
+console.log(`First Name ${firstName} ${lastName}`);
+let title = 'HR BLCOK'
+let htmlPage =`
+    <html>
+      <head>
+       <title>
+          ${title}
+       </title>
+     </head>
+     <body>
+      <h1>Welcome</h1>
+     </body>
+     </html>
+`;
+console.log(htmlPage);
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Numbers:
+
+1.number size is 64 bit by default aka double.
+2.It is IEEE 754 Standard.
+
+No int ,long,float,double only one type - number type - 
+
+//Numbers 
+let a = 100;
+let b = 200;
+
+Booleans:
+
+1.represents true or false 
+2.1 bit value.
+
+//booleans 
+let isValid = true;
+let isEnabled = false;
+
+
+//undefined:
+undefined:
+..........
+It is value, assigned to a variable, if no valid literal is assigned.
+
+
+let firstName;
+let price;
+let qty;
+console.log(`First Name ${firstName}`);
+console.log(`price ${price} ${qty}`);
+
+
+1.NaN :Not a Number 
+
+Not a Number but is number.
+NaN represents error code.
+NaN error code will come due to "numerical compuation failures".
+
+Note:
+
+ if you get NaN as out put, it is danger/toxic , it is runtime error, you need to fix.
+
+When NaN will come?
+ 
+let price;
+let qty;
+console.log(`First Name ${firstName}`);
+console.log(`price ${price} ${qty}`);
+
+//NaN ; it is error code , will come during numerical computation
+
+let totalPrice = price * 1000;
+console.log(`Total Price ${totalPrice}`)
+
+
+Type conversion : string to number
+
+types of Type conversion
+
+1.implicit Type conversion
+ js automatically converts string to number
+2.explicit Type conversion
+ js uses conversion utility apis to convert string to number.
+
+
+let count = "10"; // it string type but value is numerical value
+
+//Type conversion happened here; implicit conversion
+let totalCount = count * 10;
+console.log(`Total Count ${totalCount}`);
+
+//Type conversion using js built in api.
+//double(64 bit) to 32 bit(integer)
+let totalCounter = parseInt(count) * 10;
+console.log(`Total Count ${totalCounter}`);
+let totalCounterdouble = parseFloat(count,16) * 10;
+console.log(`Total Count ${totalCounterdouble}`);
+
+
+//Nan and type conversion
+// here $100 is not numerical so during type conversion, error is thrown.
+let stockValue = "$100";
+let totalStock  = parseInt(stockValue) * 100;
+console.log(`Total Stock ${totalStock}`);
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Data Types and Javascript :
+
+How do i know the type of a variable?
+
+typeof operator is used to know the type of variable.
+typeof operator returns the type name in smaller case. eg "string,number,undefined,booelean"
+
+//string
+let firstName = "Subramanian";
+let lastName = 'Murugan'
+//console.log("First Name" + firstName);
+console.log(`First Name ${firstName} ${lastName}`);
+let title = 'HR BLCOK'
+let htmlPage = `
+    <html>
+      <head>
+       <title>
+          ${title}
+       </title>
+     </head>
+     <body>
+      <h1>Welcome</h1>
+     </body>
+     </html>
+`;
+console.log(htmlPage);
+
+//Numbers 
+let a = 100;
+let b = 200;
+
+//booleans 
+let isValid = true;
+let isEnabled = false;
+
+//undefined
+let price;
+let qty;
+console.log(`First Name ${firstName}`);
+console.log(`price ${price} ${qty}`);
+
+//NaN ; it is error code , will come during numerical computation
+
+let totalPrice = price * 1000;
+console.log(`Total Price ${totalPrice}`)
+
+//type conversion
+let count = "$10" //string
+let totalCount = parseInt(count) * 10;
+console.log(totalCount)
+
+//infinity
+//div by 0
+let newprice = 1000;
+let avgPrice = newprice / 0;
+//Avg Price Infinity
+console.log(`Avg Price ${avgPrice}`);
+
+//typeof operator ; tells the type of variable
+
+console.log(`First Name Type ${typeof firstName}`) // string
+console.log(`a Type ${typeof a}`) // string
+console.log(`totalPrice(NaN) ${typeof totalPrice}`) // string
+console.log(`avgPrice(Infinity) ${typeof avgPrice}`) // string
+console.log(`isValid Type ${typeof isValid}`) // string
+console.log(`price(undefined) ${typeof price}`) // string
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+JS Types:
+
+1.string
+2.number - nan,infinity
+3.undefined
+4.boolean
+5.function
+6.object - null,object
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Typescript and type system:
+...........................
+
+Strong typing:
+Type script introduces data types which can be used to verfify the compile time code viloations.
+
+Type annotations:
+  types
+
+Type script offers the follow type annotations
+
+prmitive datatypes
+1.string
+2.number
+3.boolean
+
+Object types:
+
+Object
+Array
+Enum
+
+Other types
+void
+any
+Function
+
+Syntax  of strongly typed
+
+let variable:type = literal
+
+int a =10;
+
+a = "hello" ;;compiler will throw error : compile time vertification.
+
+
+eg:
+
+//string 
+
+let firstName: string = "Hello";
+let lastName:string =100
+
+[9:39:45 AM] File change detected. Starting incremental compilation...
+
+src/index.ts:6:5 - error TS2322: Type 'number' is not assignable to type 'string'.
+
+6 let lastName:string =100
+      ~~~~~~~~
+
+[9:39:46 AM] Found 1 error. Watching for file changes.
+
+
+Type erasor/:
+ Types will be erased after compilation; any ts specific notations will not be available 
+after code is compiled.
+
+
+index.ts
+//strong 
+
+//string 
+let firstName: string = "Hello";
+//let lastName:string =100
+let age: number = 18;
+let isEnabled: boolean = true;	
+
+index.js
+//strong 
+//string 
+var firstName = "Hello";
+//let lastName:string =100
+var age = 18;
+var isEnabled = true;
+
+
+Ways of declaring :
+
+1.expilicit
+  let variableName:type = value
+
+2.implicit : Type inference
+
+   if any variable is assigned with specific type value
+
+ let variableName = value
+
+
+//how to declare variable and how to initalize
+
+//declare and initalize in the same line
+let firstName: string = "Subramanian";
+
+//declared variable
+let lastName: string;
+lastName = "Murugan";
+
+//reinitlize 
+//lastName =100;
+////////////////////////////////////////////////////////////////////////////
+//type inference;
+
+//once the variable declare and initalized with any value, that value type is 
+//implicitly assinged , in future assignment if you different type , will not 
+// be allowed
+let price = 100;
+price = 200
+//price = "Hello"
+
+//what if i want js like syntax; no type is forced
+//way -1
+//undefined ; once if variable is declare with undefined , later any type can be assinged
+let qty;
+qty = 100;
+qty = "Hello"
+
+//way-2 ; any means no type is forced or if you dont know type in advance
+let value: any;
+value = 100;
+
+value = "Hello"
+
+value = true;
+
+//////////////////////////////////////////////////////////////////////////////
+let stock:undefined
+//stock =100;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
