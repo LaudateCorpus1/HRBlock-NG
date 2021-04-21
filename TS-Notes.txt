@@ -691,6 +691,7 @@ Enum
 Other types
 void
 any
+unknown
 Function
 
 Syntax  of strongly typed
@@ -794,27 +795,533 @@ value = true;
 let stock:undefined
 //stock =100;
 
+/////////////////////////////////////////////////////////////////////////////////////////
+
+Typescript compiler and compile time errors:
+
+
+-if any compile time error found, the compiler will show error, starts transpiling the code
+ 
+what if i want to enforce if there is any compile time, dont emmit code
+
+ "noEmitOnError":true
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+functions:
+
+ how to delcare function, args and parameters
 
 
 
 
+function sayHello() {
+    console.log('hello')
+}
+sayHello();
+
+//variable pattern; anonmous
+let hai = function () {
+    console.log('hai')
+};
+hai()
+//es 6 way of declaring function: arrow functions
+let greet = () => {
+    console.log('greet')
+};
+greet();
+//arrow deep
+//if funciton has one line,remove {}
+let greet1 = () =>console.log('greet')
+greet1();
+/////////////////////////////////////////////////////////////////////////////////////
+
+params and args:
+//args and parameters
+
+//here message is arg and its type is infered during function call value
+// function sayHello(message) {
+//     console.log(message)
+// }
+// sayHello('hello')
+// sayHello(10)
+// sayHello(true)
+
+//explicit
+function sayHai(message: string) {
+    console.log(message)
+}
+sayHai('Hello')
+//sayHai(100)
+function sayGreet(message: any) {
+    console.log(message)
+}
+sayGreet('Hello')
+sayGreet(100)
+
+//what if i want to force to use type of args 
+function sayHello1(message: any) {
+    console.log(message)
+}
+//
+let add = (a: number, b: number) => {
+    let c = a + b;
+    console.log(c);
+}
+add(10,10)
+//return type;
+
+implictany :  forcing to use type for a variable
+
+   "compilerOptions": {
+           "noImplicitAny": true,
+    
+    }
+////////////////////////////////////////////////////////////////////////////////////////
+
+return type
 
 
 
+//return type is infered based on values
+function getMessage() {
+    return "Hello";
+}
+console.log(getMessage())
+
+//return type is also infered based on parameters
+function getValue(value: any) {
+    return value;
+}
+console.log(getValue(100))
+console.log(getValue("test"))
+
+//explicit type
+function getValue1(value: string): string {
+    return value;
+}
+console.log(getValue1("100"))
+
+function getValue2(value: string): any {
+    return value;
+}
+console.log(getValue2("100"))
+
+//dont want return ; dont keep without any type;
+
+function doStuff(value: string): void {
+    console.log(value)
+    // return; //empty return is void
+}
+doStuff("100");
+
+// let add = (a: number, b: number): number => {
+//     return a + b;
+// }
+//only line of code; only return statement;remove {} and return statement
+let add = (a: number, b: number): number => a + b;
+console.log(add(1, 1))
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Optional,required,default args:
+...............................
+
+
+let greet = (name: string, message: string, when: string): void => {
+    console.log(`name ${name} message ${message} when ${when}`)
+};
+greet("subramanian");
 
 
 
+src/index.ts:5:1 - error TS2554: Expected 3 arguments, but got 1.
+
+5 greet("subramanian");
+  ~~~~~~~~~~~~~~~~~~~~
+
+  src/index.ts:2:28
+    2 let greet = (name: string, message: string, when: string): void => {
+                                 ~~~~~~~~~~~~~~~
+    An argument for 'message' was not provided.
+
+what if i want to skip rest of the parameters?
+
+1.optional parameter ? ts feature
+
+
+//optional parameters; parameters can be skipped
+let greet = (name: string, message?: string, when?: string): void => {
+    console.log(`name ${name} message ${message} when ${when}`)
+};
+greet("subramanian");
+
+2.default args ; e6 feature
+
+//default args
+let greetMe = (name: string = "name", message: string = "message", when: string = "when"): void => {
+    console.log(`name ${name} message ${message} when ${when}`)
+};
+greetMe()
+greetMe("Ram")
+greetMe("Ram","hello","today")
+//////////////////////////////////////////////////////////////////////////////////////////
+
+Union type:
+..........
+function args type can be mixed ; either this or that
+
+for eg : id variable may be string or number - 
+
+ id: string | number
+
+
+function printId(id: number | string) {
+    console.log("Your ID is: " + id);
+}
+printId(100)
+printId("100")
+
+
+function printId(id: number | string) {
+    console.log(id.toUpperCase());
+
+}
+Property 'toUpperCase' does not exist on type 'string | number'.
+    Property 'toUpperCase' does not exist on type 'number'.
+
+TypeScript will only allow you to do things with the union if that thing is valid for every member of the union. For example, if you have the union string | number, you can’t use methods that are only available on string:
+
+Narrowing:
+how to work with this? narrowing:
+
+The solution is to narrow the union with code, the same as you would in JavaScript without type annotations. Narrowing occurs when TypeScript can deduce a more specific type for a value based on the structure of the code.
+
+
+//function uniion type
+
+function printId(id: number | string) {
+    console.log("Your ID is: " + id);
+}
+printId(100)
+printId("100")
+//printId(true) //error
+// function printId(id: number | string) {
+//     console.log(id.toUpperCase());
+
+// }
+// Property 'toUpperCase' does not exist on type 'string | number'.
+//     Property 'toUpperCase' does not exist on type 'number'.
+
+function printId1(id: number | string) {
+    if (typeof id === "string") {
+        // In this branch, id is of type 'string'
+        console.log(id.toUpperCase());
+    } else {
+        // Here, id is of type 'number'
+        console.log(id.toFixed());
+    }
+}
+printId1(100)
+printId1(123.86789);
+printId1("abc")
+
+function welcomePeople(x: string[] | string) {
+    if (Array.isArray(x)) {
+        // Here: 'x' is 'string[]'
+        console.log("Hello, " + x.join(" and "));
+    } else {
+        // Here: 'x' is 'string'
+        console.log("Welcome lone traveler " + x);
+    }
+}
+welcomePeople("subramanian")
+welcomePeople(['subu','ram'])
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Object Oriented Concepts:
+........................
+
+How to create object?
+
+1.via constructor pattern
+ - function- es 5 
+ - class - es 6
+
+2.literal pattern
+  es 5 and es 6.
+
+class:
+......
+-typescript classes added lot of features out of es 6 class.
+
+Custom types/ user defined /complex /dervied types:
+...................................................
+
+1.class
+2.interface
+3.type
+
+
+//class ; instance variable and instance methods
+
+class Employee {
+    id: number = 1
+    name: string = "Subramanian";
+    isWorking: boolean = true;
+    //instance methods
+    calculateSalary(): number {
+        return 1000;
+    }
+}
+//emp is just reference variable
+//new is operator to create instance
+//Employee() constructor call.
+let emp = new Employee();
+console.log(emp.id,emp.name,emp.isWorking,emp.calculateSalary())
+emp.id=900;
+//emp.id ="hello" //error
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+state initalization:
+
+->direct /hardcoded
+
+->after object creation
+
+->through constructor.
+
+
+->direct /hardcoded
+
+->after object creation
+
+
+class Employee {
+    //direct hardcoded
+    id: number = 1
+    name: string = "Subramanian";
+    isWorking: boolean = true;
+    //instance methods
+    calculateSalary(): number {
+        return 1000;
+    }
+}
+//emp is just reference variable
+//new is operator to create instance
+//Employee() constructor call.
+let emp = new Employee();
+console.log(emp.id, emp.name, emp.isWorking, emp.calculateSalary())
+//after object creation
+emp.id = 900;
+emp.name ="ram"
+emp.isWorking =false
+//emp.id ="hello" //erro
+console.log(emp.id, emp.name, emp.isWorking, emp.calculateSalary())
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+init via constructors:
+
+//constructor
+
+class Employee {
+    //just declare variable
+    id: number
+    name: string
+    isWorking: boolean;
+    //constructor args variables ; local variables
+    constructor(id: number, name: string = "foo", isWorking: boolean = false) {
+        this.id = id;
+        this.name = name;
+        this.isWorking = isWorking;
+    }
+    //instance methods
+    calculateSalary(): number {
+        return 1000;
+    }
+}
+//let emp = new Employee(1);
+let emp = new Employee(1, "subramanian", true);
+
+console.log(emp.id, emp.name, emp.isWorking, emp.calculateSalary())
+////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Encasulation:
+
+What is encasulation?
+
+To Prevent code sharing from code to another.
+
+code - collection of classes, variables,functions,......
+
+code is represented inside file.
+
+pl provides keywords to ensure that , how  we can allow the code to be shared
+
+TS provides keywords to prevent code sharing
+ 
+ -public - any where
+ -private - with in class 
+ -protected - with in class + inheritance
+
+only class members are public/private/protected.
+
+---if you declare any member(var,methods) => by default is public.
+
+1.Explicit public:
+
+//by default all instance members are public;
+
+class Employee {
+    //just declare variable
+    public id: number
+    public name: string
+    public isWorking: boolean;
+    //constructor args variables ; local variables
+    constructor(id: number, name: string = "foo", isWorking: boolean = false) {
+        this.id = id;
+        this.name = name;
+        this.isWorking = isWorking;
+    }
+    //instance methods
+    public calculateSalary(): number {
+        return 1000;
+    }
+}
+let emp = new Employee(1, "subramanian", true);
+
+console.log(emp.id, emp.name, emp.isWorking, emp.calculateSalary())
+
+
+private :
+
+class AuthService {
+    private password: string = "Abbb3333434"
+}
+let authService = new AuthService();
+console.log(authService.password);
+
+
+src/index.ts:7:25 - error TS2341: Property 'password' is private and only accessible within class 'AuthService'.
+
+7 console.log(authService.password);
+                          ~~~~~~~~
 
 
 
+//private 
+
+class AuthService {
+    private password: string = "Abbb3333434"
+
+    private generatePassword() {
+        return '88822dwwewewe';
+    }
+
+    public getPass(): string {
+        return this.generatePassword() + this.password
+    }
+
+}
+let authService = new AuthService();
+//console.log(authService.password);
+//console.log(authService.generatePassword());
+console.log(authService.getPass())
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+variables types:
+
+1.instance variable
+  variable declared inside class
+2.local variables
+  variables are declared inside method(including constructor)
+  or method args / constructor args
+
+default scope of instance variables  all are public
+
+Note:
+ how to reduce variable declarations inside class (instance variable declaration)
+
+Typescript provides a facility to "Treat local variable as instance variable: constructor 
+args"
+
+ constructor args can be converted from local to instance variables
+
+ why : to reduce code.
+
+How to convert local variables into instance variables?
+
+ "Add" -public / private keywords in the constructor args
 
 
+class Employee {
+    //just declare variable
+    // public id: number
+    // public name: string
+    // public isWorking: boolean;
+    //constructor args variables ; instance variables
+    constructor(public id: number, public  name: string = "foo", public isWorking: boolean = false) {
+        this.id = id;
+        this.name = name;
+        this.isWorking = isWorking;
+    }
+    //instance methods
+    public calculateSalary(): number {
+        return 1000;
+    }
+}
+let emp = new Employee(1, "subramanian", true);
+
+console.log(emp.id, emp.name, emp.isWorking, emp.calculateSalary())
 
 
+Still we can reduce code
+
+class Employee {
+    constructor(public id: number, public name: string = "foo", public isWorking: boolean = false) { }
+    //instance methods
+    public calculateSalary(): number {
+        return 1000;
+    }
+}
+
+let emp = new Employee(1, "subramanian", true);
+
+console.log(emp.id, emp.name, emp.isWorking, emp.calculateSalary())
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Hierachy : HAS-A dependency injection && is-a : inheritance
+..........................................................
+
+HAS- A : dependency injection :
+...............................
+
+//has-a dependency injection.
+
+class Product {
+    constructor(public id: number = 1, public name: string = 'product-1') {
+
+    }
+}
+class Order {
+    constructor(public orderId: number = 1, public product: Product = new Product()) {
+    }
+}
 
 
+class Employee{
 
+}
 
+let order = new Order();
+console.log(order.orderId, order.product.name);
+
+let order1 = new Order(12, new Product(90, 'Computers'));
+console.log(order1.orderId, order1.product.name);
+
+// let order2 = new Order(45, new Employee()); error because type is invalid.
 
 
 

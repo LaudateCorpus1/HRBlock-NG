@@ -2,7 +2,10 @@
     "compilerOptions": {
         "outDir": "build",
         "watch": true,
-        "target": "ES5"
+        "target": "ES5",
+        "noEmitOnError":true,
+        "noImplicitAny": true,
+        "strictNullChecks": true
     },
     "files": [
         "src/index.ts"
