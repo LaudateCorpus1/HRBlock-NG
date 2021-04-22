@@ -1323,14 +1323,505 @@ console.log(order1.orderId, order1.product.name);
 
 // let order2 = new Order(45, new Employee()); error because type is invalid.
 
+///////////////////////////////////////////////////////////////////////////////////////////
+
+IS-A - inheritance:
+
+Type script offers various based classes
+
+1.concrete class 
+2.interface
+3.abstract classes
 
 
 
+Basic inheritance:
+//IS -A  inheritance:
+
+class Account {
+    protected myvar: string = "Account class"
+    
+    constructor(public id: string, public minbalance: number) {
+        console.log('Account')
+    }
+    protected getBank(): string {
+        return 'MyBank'
+    }
+}
+class SavingsAccount extends Account {
+    constructor(id: string = "A001", minbalance: number = 0) {
+        super(id, minbalance); //call base class constructor
+        console.log("Savings Account" + this.myvar)
+    }
+    public displayBankDetails(): string {
+        return this.getBank();
+    }
+    public displayAccountDetails(): string {
+        return `Account details ${this.id} ${this.minbalance}`
+    }
+}
+
+let sb = new SavingsAccount();
+//console.log(sb.myvar);
+console.log(sb.displayBankDetails());
+//console.log(sb.getBank())
+console.log(sb.displayAccountDetails());
+
+
+overriding:
+//overriding / method defining
+
+class Account {
+    constructor() {
+        console.log('account class')
+    }
+    protected getBalance(): number {
+        return 100;
+    }
+}
+class SavingsAccount extends Account {
+    constructor() {
+        super();
+        console.log('account class')
+    }
+    //override
+    public getBalance(): number {
+        return 1000 + super.getBalance();
+    }
+
+}
+let sb = new SavingsAccount();
+console.log(sb.getBalance())
+////////////////////////////////////////////////////////////////////////////////////////////
+interfaces:
+...........
+
+eat
+fly
+
+animal  bird
+
+fly
+bird  airplan  superman batman 
+
+common behavioiur which is in unrelated family of classes - interfaces.
+
+interface  InterfaceName{
+   method();
+}
+implements keywords
+
+interface Flyable {
+    fly(whoisFlyling: string): string;
+}
+
+interface Landing {
+    land(whoisLanding: string): string;
+}
+
+class Bird implements Flyable, Landing {
+    fly(whoisFlyling: string): string {
+        return whoisFlyling;
+    }
+    land(whoisLanding: string): string {
+        return whoisLanding
+    }
+}
+class Jet implements Flyable, Landing {
+    fly(whoisFlyling: string): string {
+        return whoisFlyling;
+    }
+    land(whoisLanding: string): string {
+        return whoisLanding
+    }
+}
+let bird = new Bird();
+console.log(bird.fly('Bird is flying'))
+console.log(bird.land('Bird is landing'))
+
+let jet = new Jet();
+console.log(jet.fly('Jet is flying'))
+console.log(jet.land('Jet is landing'))
+
+////////////////////////////////////////////////////////////////////////
+abstract classs:
+
+  common behavioiur which is in related family of classe.
+  -unimplmented methods and implemented methods.
+
+//abstract class 
+
+interface Flyable {
+    fly(whoisFlyling: string): string;
+}
+
+abstract class Bird implements Flyable {
+    constructor() {
+        console.log('Bird is initalized')
+    }
+    //abstract method
+    protected abstract buildNest(whoBuildNest: string): string;
+    //concrete method
+    public saveBirds(): string {
+        return 'Save Birds from Hunter'
+    }
+    fly(whoisFlyling: string): string {
+        return whoisFlyling;
+    }
+}
+class Crow extends Bird {
+    constructor() {
+        super();
+    }
+    public buildNest(whoBuildNest: string): string {
+        return whoBuildNest;
+    }
+    fly(whoisFlyling: string): string {
+        return whoisFlyling;
+    }
+
+}
+class Warbler extends Bird {
+    constructor() {
+        super();
+    }
+    public buildNest(whoBuildNest: string): string {
+        return whoBuildNest;
+    }
+}
+
+let bird = new Crow();
+console.log(bird.saveBirds(), bird.buildNest('Crow'))
+let bird1 = new Crow();
+console.log(bird1.saveBirds(), bird1.buildNest('WarBler'))
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Object types:
+1.class as type
+2.interface as type
+3."type" keyword
+
+
+1.class as type
+
+ classes are used as for object template ; to create object
+ 
+
+class Employee {
+    id: number;
+    name: string;
+    salary?: number;
+    isWorking?: boolean;
+}
+
+//object literal ; how to represent type for object properties
+
+let employee: Employee = {
+    id: 1,
+    name: 'subramanian',
+    salary: 10000,
+    isWorking: true
+}
+//use case 2
+let emp: Employee = {
+    id: 2,
+    name: 'ram'
+}
+
+let printEmployeeDetails = (employee: Employee): Employee => {
+    return employee;
+}
+printEmployeeDetails(emp);
+
+
+//interface as type
+interface AccountType {
+    id: number;
+    name: string;
+    balance?: number;
+}
+
+let sb:AccountType ={
+    id:1,
+    name:'Test',
+    balance:20
+}
+
+let loanaccount:AccountType ={
+    id:1,
+    name:'Test',
+    balance:20
+}
 
 
 
+type CustomerType = {
+    id: number,
+    name: string;
+    city?: string;
+};
+
+let cust: CustomerType = {
+    id: 1,
+    name: "Customer",
+    city: 'Coimbatore'
+}
+console.log(cust);
+////////////////////////////////////////////////////////////////////////////////
+//Union types and interface/class/type;
+
+interface Options {
+    width: number;
+}
+function configure(x: Options | "auto") {
+    // ...
+}
+configure({ width: 100 });
+configure("auto");
+//configure("automatic"); //error
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Arrays:
+.......
+
+Array is object, instance of Array class
 
 
+Arrays Types:
+.............
+
+1.normal syntax
+let list:number[] = [1,2,3,4];
+2.generics syntax
+
+//array types
+
+//let list: number[] = [1, 2, 3, 4, "hello"]; error
+
+let list: Array<number> = [1, 2, 3, 4, 5];
+
+let names: Array<string> = ["a", "b"];
+
+//array of Products
+
+class Product {
+    id: number;
+    name: string;
+    price?: number;
+    qty?: number;
+}
+
+
+let products: Array<Product> = [
+    { id: 1, name: 'a1', price: 100, qty: 23 },
+    { id: 2, name: 'a2', price: 100, qty: 23 },
+    { id: 3, name: 'a3', price: 100, qty: 23 },
+    { id: 4, name: 'a4', price: 100, qty: 23 },
+    { id: 5, name: 'a5', price: 100, qty: 23 }
+
+];
+let products1: Product[] = [
+    { id: 1, name: 'a1', price: 100, qty: 23 },
+    { id: 2, name: 'a2', price: 100, qty: 23 },
+    { id: 3, name: 'a3', price: 100, qty: 23 },
+    { id: 4, name: 'a4', price: 100, qty: 23 },
+    { id: 5, name: 'a5', price: 100, qty: 23 }
+];
+////////////////////////////////////////////////////////////////////////////////////////////
+enumeration: named constant
+
+//Enum
+enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+console.log(Direction.Up)
+console.log(Direction.Down)
+
+enum UserResponse {
+    No = 0,
+    Yes = 1,
+}
+
+function respond(recipient: string, message: UserResponse): void {
+    // ...
+    console.log(recipient, message)
+}
+
+respond("Princess Caroline", UserResponse.No);
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Decorators:
+..........
+
+annotations: @annotation , @Override,@Entity,@Controller
+
+-meta programming : isloate the code logic from main program to ouside, when you 
+req, you inject those features , into code during runtime.
+
+Decorators are experimental feature in es7. but ts added this language with experimental
+mode.
+
+How to create our own decorators?
+
+Steps:
+
+1.declare decorator
+  function , based on syntax
+2.use the decorator
+  you can use on class,method,field
+  @functionname.
+
+
+Steps:
+
+//decorators : 
+
+//declare decorator
+
+function Course(target: any) {
+    console.log('Course decorator is activated')
+}
+
+//apply decorator/annotate
+
+@Course
+class Student {
+    constructor() {
+
+    }
+}
+let student = new Student();
+
+src/index.ts:12:7 - error TS1219: Experimental support for decorators is a feature that is subject to change in a future release. Set the 'experimentalDecorators' option in your 'tsconfig' or 'jsconfig' to remove this warning.
+
+12 class Student {
+         ~~~~~~~
+
+
+{
+    "compilerOptions": {
+           "experimentalDecorators": true,
+          "emitDecoratorMetadata": true
+    },
+    "files": [
+        "src/index.ts"
+    ]
+}
+
+////////////////
+
+Decorator logic and error
+//decorators : 
+
+//declare decorator
+
+function Course(target: any) {
+    console.log('Course decorator is activated')
+    //logic for decorator
+    Object.defineProperty(target.prototype, "subject", {
+        value: 'Typescript'
+    });
+
+}
+
+//apply decorator/annotate
+
+@Course
+class Student {
+    constructor(public firstName: string, public lastName: string) { }
+}
+let student = new Student("Subramanian", "Murugan");
+console.log(`${student.firstName} ${student.lastName} is learning ${student.subject} `)
+
+
+[9:40:01 am] File change detected. Starting incremental compilation...
+
+src/index.ts:21:77 - error TS2339: Property 'subject' does not exist on type 'Student'.
+
+21 console.log(`${student.firstName} ${student.lastName} is learning ${student.subject} `)
+
+
+Here typescript compiler is telling that , i am not able to findout "subject" is part of Student Type
+
+
+How to fix this problem? how to tell ts compiler dont worry this is runtime property.
+
+ "type alise" : as
+ 
+
+full decorator:
+//decorators : 
+
+//declare decorator
+
+function Course(target: any) {
+    console.log('Course decorator is activated')
+    //logic for decorator
+    Object.defineProperty(target.prototype, "subject", {
+        value: 'Typescript'
+    });
+
+}
+
+class CourseType {
+    firstName?: string;
+    lastName?: string;
+    subject?: string;
+}
+
+//apply decorator/annotate
+
+@Course
+class Student {
+    constructor(public firstName: string, public lastName: string) { }
+}
+// let student = new Student("Subramanian", "Murugan") as CourseType
+let student = new Student("Subramanian", "Murugan") as any //type coericion
+console.log(`${student.firstName} ${student.lastName} is learning ${student.subject} `)
+////////////////////////////////////////////////////////////////////////////////////////////
+
+How to pass parameter - string,object
+How to decorate multiple decorators
+
+
+//decorator with input
+
+function Course(courseName: string) {
+    //logic should be inside  inner function, that function should be returned
+    return function (target: any) {
+        //logic for decorator
+        Object.defineProperty(target.prototype, "subject", {
+            value: courseName
+        });
+    }
+}
+type TeacherType = {
+    id: number,
+    name: string
+}
+function Teacher(teacher: TeacherType) {
+    //logic should be inside  inner function, that function should be returned
+    return function (target: any) {
+        //logic for decorator
+        Object.defineProperty(target.prototype, "trainer", {
+            value: teacher
+        });
+    }
+}
+
+@Course('Rxjs')
+@Teacher({ id: 1, name: 'Karthik' })
+class Student {
+    constructor(public firstName: string, public lastName: string) { }
+}
+// let student = new Student("Subramanian", "Murugan") as CourseType
+let student = new Student("Subramanian", "Murugan") as any //type coericion
+console.log(`${student.firstName} ${student.lastName} is learning ${student.subject} from ${student.trainer.name} `)
+//
 
 
 
