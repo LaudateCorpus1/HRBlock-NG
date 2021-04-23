@@ -2,6 +2,8 @@
     "compilerOptions": {
         "outDir": "build",
         "watch": true,
+        "moduleResolution": "node",
+        "module": "ES6",
         "target": "ES5",
         "noEmitOnError": true,
         "noImplicitAny": true,

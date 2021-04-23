@@ -1822,6 +1822,395 @@ class Student {
 let student = new Student("Subramanian", "Murugan") as any //type coericion
 console.log(`${student.firstName} ${student.lastName} is learning ${student.subject} from ${student.trainer.name} `)
 //
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Field level decorator:
+.......................
+
+function Course(courseName: string = 'Type Script') {
+    return function (target: any) {
+        //biz logic
+        Object.defineProperty(target.prototype, 'courseName', { value: courseName })
+    }
+
+}
+
+function Input(label: string) {
+    //target would be object(Student) and key would be firstName ...
+    return function (target: any, key: string) {
+        //logic
+        Object.defineProperty(target, key, {
+            get: () => label
+        });
+    }
+}
+
+
+
+@Course()
+class Student {
+    @Input('Subramanian')
+    firstName;
+    @Input('Murugan')
+    lastName;
+    constructor(firstName?: string, lastName: string = '') {
+        this.firstName = firstName
+        this.lastName = lastName;
+    }
+}
+let student = new Student() as any;
+console.log(`${student.firstName} ${student.lastName} is learning ${student.courseName}`)
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Method level : 
+ decorator is added on top of method.
+
+function Course(courseName: string = 'Type Script') {
+    return function (target: any) {
+        //biz logic
+        Object.defineProperty(target.prototype, 'courseName', { value: courseName })
+    }
+
+}
+
+function Input(label: string) {
+    //target would be object(Student) and key would be firstName ...
+    return function (target: any, key: string) {
+        //logic
+        Object.defineProperty(target, key, {
+            get: () => label
+        });
+    }
+}
+
+function expandAble(value: boolean = true) {
+    return function (target: any, prop: any, propdescriptor: PropertyDescriptor) {
+        propdescriptor.writable = value;
+        console.log('target',target);
+        console.log('prop',prop);
+        console.log('propdescriptor',propdescriptor)
+    }
+}
+
+
+@Course()
+class Student {
+    @Input('Subramanian')
+    firstName;
+    @Input('Murugan')
+    lastName;
+    constructor(firstName?: string, lastName: string = '') {
+        this.firstName = firstName
+        this.lastName = lastName;
+    }
+    @expandAble(false)
+    public calculateCost(): number {
+        return 1000;
+    }
+}
+let student = new Student() as any;
+console.log(`${student.firstName} ${student.lastName} is learning ${student.courseName}`)
+console.log(`Cost for the course ${student.calculateCost()}`)
+//new cost ; this is default overriding; what if nobody should override.
+student.calculateCost = function () {
+    return 100;
+};
+console.log(`Cost for the course ${student.calculateCost()}`)
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//let vs const
+
+let a: number = 10;
+console.log(a)
+//reassign a
+a = 90;
+console.log(a)
+
+const PI: number = 3.14;
+console.log(PI)
+//PI = 90.8;
+
+class Employee{
+    readonly firstName:string ='subramaian'
+    department:string ='training'
+}
+let emp = new Employee();
+console.log(emp.firstName,emp.department);
+//emp.firstName ='Geetha'
+emp.department ='dev';
+console.log(emp.firstName,emp.department);
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Modularity:
+..........
+
+javascript is fundamentally does not have modularity like c,c++,java,C#
+
+How to organize code into different files and folders and how to link them and how to share them.
+
+c++ - header files
+java - packages
+c# - namespaces
+
+javascript - file based 
+
+-inside file, code is global by default
+ so i include many files, there is possiblity code clash.
+
+eg:
+ a.js
+   function sayGreet(){}
+
+ b.js
+   function sayGreet(){}
+
+<script src="a.js">
+<script src="b.js">
+ here only b.js saygreet will be taken.
+
+JS ;
+1. has no language level modular design for file loading ,linking , sharing
+
+2.Javascript engine provides simple loader which can load one .js file at a time.
+
+3.If file has linking with other file,that also should be loaded separtly.
+
+How to solve this issue?
+
+Via module design patterns.
+
+1.Namespace design pattern : which is core design pattern helps to organize code sharing only
+ 
+ ->how to encapsulate the code
+ which uses js core concept called "literal object/iife)"
+
+2.AMD
+
+3.CJS
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+4.ES 6 Module design pattern
+
+////////////////////////////////////////////////////////////////////////////////////////////
+5.System
+
+6.UMD
+
+Two design patterns only available in development:
+
+1.cjs - used in node.js
+
+2.es6 modules
+   can be used in browser
+   can be used in node
+ no direct implementation available in both env. we need loader.
+
+ loader is lib /program which will help to convert module specfic code into browser or node
+understandable format.
+
+cjs is built in node js, so we dont need any extra loaders.
+
+Loaders:
+ -webpack
+ -rollup
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+E6 modularity and typescript 
+
+ typescript supports e6 modularity.
+
+ ts compiler con  convert es 6 module into cjs,amd,system,umd.
+
+ ts compiler by default convert es6 modules into cjs.
+
+es 6 modularity  has keywords:
+
+code sharing
+1.export
+2.export default
+
+file linking
+import 
+
+what could be the code
+
+ -variables,functions,classes,interfaces,types......
+
+
+
+eg:
+
+mock-data.ts
+
+
+//code; share 
+export const firstName:string ='Subramanian'
+
+mock-data.js
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.firstName = void 0;
+//code; share 
+exports.firstName = 'Subramanian';
+
+
+index.ts
+
+import { firstName } from './mock-data';
+
+console.log(firstName)
+
+index.js
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var mock_data_1 = require("./mock-data");
+console.log(mock_data_1.firstName);
+
+
+in order to run cjs/es6 inside browser , we need loader ; webpack.
+
+webpack:
+
+>npm install webpack webpack-cli --save-dev
+
+
+>webpack.config.js
+const path = require('path');
+
+module.exports = {
+    entry: './build/index.js',
+    mode: 'development',
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'bundle.js',
+    },
+
+};
+
+>package.json
+ "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "tsc",
+    "build": "webpack --watch"
+  }
+npm run build
+>index.html
+
+    <script src="dist/bundle.js"></script>
+
+
+  
+export vs export default
+
+ export - multi export
+ export default - single export.
+
+modularity patterns:
+
+organize the code into folders
+
+src
+ |
+ folder
+ folder
+ folder
+index.ts
+
+eg:
+ controller -----service ---uses models
+
+eg:
+src
+  -types
+    todo.type.ts
+
+export class Todo {
+    userId: number;
+    id: number;
+    title?: string;
+    completed?: boolean;
+}
+
+src
+ -mock-data
+    -todos.ts
+
+export const TODOS: Array<Todo> = [
+    {
+        userId: 1,
+        id: 1,
+        title: "delectus aut autem",
+        completed: false
+    },
+    {
+        userId: 1,
+        id: 2,
+        title: "quis ut nam facilis et officia qui",
+        completed: false
+    }]
+services
+  -todoservice.ts
+import { TODOS } from '../mock-data/todos';
+import { Todo } from '../types/todotype';
+
+export class TodoService {
+    constructor() {
+
+    }
+    findAll(): Array<Todo> {
+        return TODOS;
+    }
+}
+
+controller/todo.controller.ts
+import { TodoService } from '../services/todo.service';
+import { Todo } from '../types/todotype';
+
+// //dependency injection
+// export class TodoController {
+//     todoService: TodoService;
+//     //TodoService
+//     constructor(todoService: TodoService) {
+//         this.todoService = todoService;
+//     }
+//     //controller api
+//     findAll(): Array<Todo> {
+//         return this.todoService.findAll();
+//     }
+// }
+//dependency injection
+export class TodoController {
+    //TodoService
+    constructor(private todoService: TodoService) { }
+    //controller api
+    findAll(): Array<Todo> {
+        return this.todoService.findAll();
+    }
+}
+
+src/
+ index.ts
+
+//main
+import { TodoController } from './controller/todo.controller';
+import { TodoService } from './services/todo.service';
+
+const main = () => {
+    let todoService = new TodoService();
+    //di
+    let ctrl = new TodoController(todoService);
+    console.log(ctrl.findAll())
+}
+main();
+
+
+
+
+
+
+
 
 
 
