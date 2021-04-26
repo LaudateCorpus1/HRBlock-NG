@@ -1,5 +1,7 @@
-import { TodoService } from '../services/todo.service';
-import { Todo } from '../types/todotype';
+//import { TodoService } from '../services/todo.service';
+import { TodoService } from '../services';
+//import { Todo } from '../types/todotype';
+import { Todo } from '../types';
 
 // //dependency injection
 // export class TodoController {

@@ -1,6 +1,7 @@
 //main
-import { TodoController } from './controller/todo.controller';
-import { TodoService } from './services/todo.service';
+import { TodoController } from './controller';
+//import * as Constants from  './types'
+import { TodoService } from './services';
 
 const main = () => {
     let todoService = new TodoService();

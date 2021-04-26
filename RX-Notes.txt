@@ -1,0 +1,606 @@
+                                      Reactive Programming 
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+What is reactive programming?
+
+It is one of the  Programming Paradigm(way).
+
+Reactive programming is collection of many programming paradigm best parts and principles.
+
+Reactive programming is collection of oo , functional, event driven......principles
+
+
+Reactive Programming languages:
+..............................
+There is no such separate pl which adopts reactive programming alone.
+ rather which is eXtended by other languages : 
+Reactive programming is just like plugin, which has been pluged in inside languages via libs and frameworks.
+
+Reactive-X(x means Extension /plugin)
+
+C# can extend Reactive programming principles -Rx.net
+Java even  - Rxjava
+js  - rxjs
+///////////////////////////////////////////////////////////////////////////////////////////
+
+History of Rx Programming:
+.........................
+
+At Microsoft Erik Meijer who created Reactive Programming ideas from "C#".
+
+Core Ideas behind Reactive Programming :
+
+Object:
+  -setters - write
+  -getters - read
+
+getters
+   -single value - scallar values -number,strings,booleans,object
+   -iteralble value(many values) - array , collection-list,map,set
+
+Iterations:
+ IEnumerable ,IEnumerator 
+
+IEnumerator 
+   - bridge interface which is used to iterate collection
+
+  producer                                  consumer/subscriber Caller(requester)
+  moveNext():boolean --------------------  give me a value /error
+
+Based this we define programming model called "Pull based"
+
+ consumer pulls value from producer.
+ consumer has control over producer.
+ consumer only decide when he wants item.
+
+             "Values are produced on demand by consumer"
+
+Before a decade, programming model started like "Cloud based, async programming Programming"
+
+async programming Programming:
+.............................
+
+layers of programming
+
+1.app layer
+  -programming languguage
+  -high level apis. Console.writeLine() 
+
+2.run layer -clr
+    Console.writeLine()------low level api -C / C++ ---write()
+
+3.os layer
+  write()------------->kernal layer api ----talks device drivers----- device
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Blocking:
+
+app
+
+ function read(){
+ 1.      console.read()   
+ 2. other code
+ }
+ read();
+
+runtime code
+
+ function read(){
+     win32.read();  
+  
+ }
+
+os code
+ function win32Read(){
+    devicedriver.read()
+ }
+
+device
+  function deviceread(){
+
+    starts reading bytes -- it would create delay here - 1sec
+ }
+
+Blocking apis are apis provided by os only, language vendors who map those apis .
+
+............................................................................................
+
+Multi threading and blocking code:
+.................................
+
+modern apps and runtimes supports multithreading
+
+Web Server eg:
+.............
+
+caller-------------request------------webserver--creates thread---calls low level blocking api-- kernal---starts read /write
+
+caller-------------request------------webserver--creates thread---calls low level blocking api-- kernal---starts read /write
+
+caller-------------request------------webserver--creates thread---calls low level blocking api-- kernal---starts read /write
+
+if more threads are waiting for data...blocked mode. 
+
+---------------------------------------------------------------------------------------------
+
+C10k problems and need to eleminate more threads?
+
+ - Non blocking apis and single threaded model - async programming.
+
+non blockings are provided  by os- first api introduced by linux os.
+
+linux;
+ select
+ poll
+ epoll - modern api used by many frameworks
+
+windows;
+  iocp
+
+mac/unix - posx os
+   kqueue
+
+
+single thread and non blocking
+
+nonblockingapi()---------------thread---------------calls system call ----kernal api---data
+                                                                                        |
+              --------------returns control to app-------------------------------no data ready
+                                                                                          |
+              thread process the event+data   kernal triggers event  <--         data ready
+                             
+
+nonblockingapi()---------------thread---------------calls system call ----kernal api---data
+                                                                                        |
+              --------------returns control to app-------------------------------no data ready
+                                                                                          |
+              thread process the event+data   kernal triggers event  <--         data ready
+
+etc..
+
+In case of non blocking/async programming how data is returned from kernal to app?
+
+while making call , thread will make an agreement that once the data ready, notify me :
+  Event driven ;
+
+how to implement non blocking code in js?
+
+1.non blocking apis from js 
+
+   -timer apis -settimeout,setinterval
+   -ajax api
+     xhr
+   -websocket api
+   -dom apis
+
+etc.....
+
+2.event listener ;
+   a function which is registered while making call to kernal, that fuction is "called back"
+   by emitting event from kernal-  callback function.
+
+
+styles of writing async programming:
+...................................
+
+1.callback style -  this is basic and core
+2.promise style - used to simplify callback styles
+3.async ... await --- used to even simplify promises.
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Build an async app using all styles.
+
+
+callback style.
+
+
+//timer ; used to delay something
+
+//blocking code
+function sayHello() {
+    return 'Hello'
+}
+function sayHai() {
+    return 'Hai'
+}
+
+
+//non blocking
+function delay(callback: Function) {
+    setTimeout(callback, 5000)
+}
+console.log(sayHello());
+delay(function () {
+    console.log('i am delayed')
+});
+console.log(sayHai());
+////////////////////////////////////////////////////////////////////////////////////////////
+
+callback style:
+
+issues of callback styles
+
+1.callback hell.
+
+in order to avoid callback hell issue, promise design pattern was introduced.
+
+promise is design pattern used to write better async programming, without complex callbacks
+
+es6 introduced promise design pattern in form of promise object.
+
+Promise Object:
+...............
+
+features of Promise Object:
+
+1.Promise by deafult is Async. Which implements timer api with 0 ms .
+
+Promise can be used with any async implementations.
+
+
+Promise ES 6 implementation:
+
+
+Promise object creation:
+
+1.using constructors
+2.using factory apis - Promise.resolve=Promise.reject
+
+Promise object has api:
+
+1.promise.then
+2.promise.catch
+3.finally
+
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+async .... await : keywords introduced in es 7 version to simplify promise handling.
+
+to replace thenable calls
+
+async is keyword used to decorate a function
+
+
+full code:
+.........
+
+import { TODOS } from '../mock-data/todos';
+import { Todo } from '../types';
+
+export class TodoService {
+    constructor() {
+
+    }
+    //sync
+    // findAll(): Array<Todo> {
+    //     return TODOS;
+    // }
+    //simulate delay using callbacks
+    // findAll(callback: any): void {
+    //     setTimeout(callback, 5000, TODOS);
+    // }
+    findAll(): Promise<Todo[]> {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, 5000, TODOS);
+        });
+    }
+}
+
+
+index.js
+//main
+import { TodoController } from './controllers';
+import { TodoService } from './services';
+
+const main = async () => {
+    let todoService = new TodoService();
+    //di
+    let ctrl = new TodoController(todoService);
+    console.log('start')
+    // console.log(ctrl.findAll())
+    // ctrl.findAll()
+    //     .then(todos => console.log(todos))
+    //     .catch(err => console.log(err))
+    //     .finally(() => console.log('done'))
+
+    try {
+        const todos = await ctrl.findAll();
+        console.log(todos);
+    }
+    catch (err) {
+       console.log(err);
+    }
+    finally {
+        console.log('done')
+    }
+
+
+    console.log('end')
+}
+main();
+
+import { TodoService } from '../services';
+import { Todo } from '../types';
+
+// //dependency injection
+export class TodoController {
+
+    //TodoService
+    constructor(private todoService: TodoService) { }
+    //controller api
+    findAll(): Promise<Todo[]> {
+        // this.todoService.findAll((todos: any) => {
+        //     console.log('callback')
+        //     console.log(todos);
+        // })
+        // this.todoService.findAll()
+        //     .then(todos => console.log(todos))
+        //     .catch(err => console.log(err))
+        //     .finally(() => console.log('done'))
+        return this.todoService.findAll();
+    }
+}
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+How to read data?
+
+ blocking mode
+ nonblocking mode - aync programming.
+
+ api                                        data source
+  read data one by one                      disk file - read data byte by byte
+                                            network socket - read data byte by byte-packt by 					                     packet
+                                             
+                                            Collections -List,Array
+
+                                   "This concept we call streaming"
+
+                                      Stream is flow of data.
+
+How to read collections?
+ C#
+ java
+ js
+   all provide interfaces- apis  -  iterators
+
+
+Datasource ------iterators(IEmuerable and IEnumerator) <---moveNext()---Consumer
+
+Pullbased Programming:
+.....................
+     Requester(Consumer)(could be a program) actively requests Producer by asking data.
+	 here every thing is method/function call , blocking calls....
+
+pull based programming is mostly "blocking model".
+
+
+
+
+Push Based Programming:
+
+We need to invert the process?
+
+
+  Instead of consumer request data , producer should produce data, where consumer should be notified.
+ For erik introduced new design pattern -  Observable ------ Observer
+
+Observable is Producer who can produce data- who sets data / error / done.
+
+Observer is Consumer who listens for data -  who has event listener - for data, error,done
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+React means reaction .
+
+ if producer sets data,  EventChannel  consumer reacts for that --->Reactive Programming
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Objective:
+
+ - how to process data async using Observable design patttern.
+
+data
+ -----------------------------------------------------------------------------------------
+                     stream
+ -----------------|------------------------------------------------------------------------
+               attach api
+                     |
+                  process data
+ -----------------------------------------------------------------------------------------
+                     stream
+ -----------------|------------------------------------------------------------------------
+
+
+Reactive programming is used for async data processing.
+
+apis are designed based on functional programming principle - pure function.
+
+ 
+ data----stream---attach api----new stream----attach api ---new stream--subscribe
+ 
+Reactive Programming  = Observer + Iterator + Functional programming
+                         |            |               |
+                       Producer      consumer   api -operators
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Reactive Programming implementation:
+
+-language independant.
+
+rxJS -  reactive extension for javascript.
+
+..............................................................................................
+
+RXJS Getting started:
+.....................
+
+setup
+
+create project;
+
+npm install rxjs
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Core Concepts and Types:
+.......................
+
+Observable: represents the idea of an invokable collection of future values or events.
+
+Observer: is a collection of callbacks that knows how to listen to values delivered by the Observable.
+
+Subscription: represents the execution of an Observable, is primarily useful for cancelling the execution.
+
+Operators: are pure functions that enable a functional programming style of dealing with collections with operations like map, filter, concat, reduce, etc.
+
+Subject: is the equivalent to an EventEmitter, and the only way of multicasting a value or event to multiple Observers.
+
+Schedulers: are centralized dispatchers to control concurrency, allowing us to coordinate when computation happens on e.g. setTimeout or requestAnimationFrame or others.
+
+
+Use case 1: 
+ How to send data from producer to consumer -  PUSH BASED API.
+
+-Observable - uses setter method---- to send data,error,complete
+-Observer -  reader methods - to read data,error,complete. not pull but listens based on events
+
+different apis available to create Producer Object- 
+
+
+if data is pushed , we can keep on pushing items
+if error is thrown, then stream will be closed
+after complete is called , then stream will be closed
+
+ if stream is closed , no more data is thrown.
+
+import { Observable } from 'rxjs';
+
+//create Producer 
+const observable = new Observable(subscriber => {
+    //push /set value into subscriber object
+    subscriber.next('hello')
+    subscriber.next('hai')
+    //subscriber.error(new Error('gone'));
+    subscriber.next('greet')
+    //async result
+    setTimeout(() => {
+        subscriber.next('async data')
+        subscriber.complete();
+    }, 4000)
+    //    subscriber.complete();
+    //subscriber.next('newdata')
+});
+
+//listen for data ; create Listener/Consumer/Subscriber
+
+const subscriber = {
+    next: data => {
+        console.log(data)
+    },
+    error: err => {
+        console.log(err)
+    },
+    complete: () => {
+        console.log('done')
+    }
+};
+observable.subscribe(subscriber);
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+import { Observable } from 'rxjs';
+
+//create Producer 
+const observable = new Observable(subscriber => {
+    //push /set value into subscriber object
+    subscriber.next('hello')
+    subscriber.next('hai')
+    //subscriber.error(new Error('gone'));
+    subscriber.next('greet')
+    //async result
+    setTimeout(() => {
+        subscriber.next('async data ---')
+        subscriber.complete();
+    }, 4000)
+    //    subscriber.complete();
+    //subscriber.next('newdata')
+});
+
+observable.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+How to create stream?
+
+ stream can be created from different datasources
+
+datasources -
+  primitives -strings,numbers,
+  objects
+  array of data.
+
+stream can be created from scratch 
+const observable = new Observable(subscriber => {
+    //push /set value into subscriber object
+    subscriber.next('hello')
+    subscriber.next('hai')
+    //subscriber.error(new Error('gone'));
+    subscriber.next('greet')
+    //async result
+    setTimeout(() => {
+        subscriber.next('async data ---')
+        subscriber.complete();
+    }, 4000)
+    //    subscriber.complete();
+    //subscriber.next('newdata')
+});
+
+stream can be created from "built in operators"
+
+
+from: create stream from array
+
+import { from } from 'rxjs';
+
+//observable from array
+const source = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+const observable = from(source);
+
+observable.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

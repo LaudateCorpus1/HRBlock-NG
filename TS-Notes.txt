@@ -2204,11 +2204,67 @@ const main = () => {
     console.log(ctrl.findAll())
 }
 main();
+////////////////////////////////////////////////////////////////////////////////////////////
+barrel export:
+..............
+
+import { TodoService }        from './services/todo.service';
+ |         |                   |         |
+keyword   Things to import   keyword ./ folder/file
+
+Objective : 
+  how to eleminate files
+
+barrel export syntax
+
+import { TodoService }        from './services';
+
+import { TodoService }        from '@core/subfolder';
+
+
+./  - current dir -  src
+
+without "./" :
+ any thing which is part of node_modules from the current project or from the node built in dir.
+
+import {Component} from 'react'
+  react is folder only
+import {Component} from '@core'
+ @core is also folder only
+ |
+@ represents private npm packages
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+How to implement barrel export?
+
+step :1 add index.ts file inside every subfolder
+
+src
+ |
+ services
+   -todo.service.ts
+   -user.service.ts
+   -product.service.ts
+   -index.ts
+ controller
+    -todo.controller.ts
+    -index.ts
+ 
+step 2 : you have to import and reexport all sharable code.
+
+index.ts
+
+export { TodoService } from './todo.service'
+export { ProductService } from './product.service'
 
 
 
+step 3 : import statement will not have folder name
 
+import { TodoService } from '../services';
 
+//////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
