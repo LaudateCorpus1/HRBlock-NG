@@ -558,7 +558,62 @@ const observable = new Observable(subscriber => {
 stream can be created from "built in operators"
 
 
-from: create stream from array
+
+
+creation operators:
+...................
+
+1.new Observable
+2.factory apis -static methods
+   create
+   from
+   os
+   generate
+   interval
+   range
+   timer
+   ajax
+   empty
+   defer
+
+//create operator similar to new Observable
+
+import { Observable } from "rxjs";
+
+
+const stream = Observable.create(observer => {
+  //pushing values
+  observer.next('Hello');
+  observer.next("hai")
+  observer.complete();
+});
+stream.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+of:
+ emits sequence of values
+
+//create operator similar to new Observable
+
+import { of } from "rxjs";
+
+
+const stream = of("hello", "hai", "greet")
+stream.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+
+ 
+from: create stream from array,promise,iterable 
+ 
+1.can be used to convert Promise observable.
+
+Promise vs Observable
+1.Promise is also push based model.  
+2.Promise will send data/error only once- one time emit
+3.Observable can send more values, we can observe on those values,we can transform,filter,
+  coimbine values.
+
+
+Array as Observable
 
 import { from } from 'rxjs';
 
@@ -569,31 +624,833 @@ const observable = from(source);
 observable.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
 
 
+//promise
+const promise = Promise.resolve('Hello!!');
+const promiseSource = from(promise);
+promiseSource.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+
+//collection as Observable
+const map = new Map();
+map.set(1,"subramanian");
+map.set(2,"Shirisha");
+
+const mapSource=from(map);
+mapSource.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+//char array strings
+const stringSource=from('Hello world');
+stringSource.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+
+
+range:
+ i want to generate sequence of numbers from 1 to 1000
+
+//range
+import { range } from 'rxjs';
+
+//want to generate sequence
+
+const rangeSource = range(1, 1000)
+rangeSource.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+interval:
+  i want to emit sequence of numbers based on timers / time frame
+ every 1sec generate numbers
+
+//range
+import { interval } from 'rxjs';
+
+//want to generate sequence
+
+const intervalSource = interval(1000)
+intervalSource.subscribe(data => console.log(data),
+ err => console.log(err), () => console.log('done'));
+////////////////////////////////////////////////////////
+
+Turing "dom events / node js events" into observable.
+
+i have mouse move event / click events want to convert into observable so that i can do
+very usefull apps.
+
+  if i typing search items,want to wait for some time and fire ajax calls.
+
+fromEvent
+   how to observe mouse clicks
+//range
+import { fromEvent } from 'rxjs';
+
+//want to generate sequence
+
+const source = fromEvent(document, 'click')
+
+source.subscribe(data => console.log(data), 
+err => console.log(err), () => console.log('done'));
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+ajax calls in observable
+
+//range
+import { ajax } from 'rxjs/ajax';
+
+//want to generate sequence
+const url = "https://jsonplaceholder.typicode.com/todos";
+const source = ajax(url)
+
+source.subscribe(data => console.log(data.response), 
+err => console.log(err), () => console.log('done'));
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+empty:
+  Observable that immediately completes - send only complete signal
+
+import {empty} from 'rxjs';
+
+const emptySource = empty();
+emptySource.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+ Data Processing :
+
+how data can be processed?
+
+ -Transformation
+ -Filtering
+ -Conditional
+ -Combination
+ -ErrorHandling
+
+import {op} from 'rxjs/operators'
+
+Transformation:
+  data can be transformed from one form to anthoer
+
+eg:
+  i have list of strings, i want to convert into uppercase
+  i have list of numbers, i want to double it
+ etc
+
+for transformation we have 50+ operators
+
+
+map
+flatMap/mergeMap
+switchMap
+scan
+buffer
+window
+toArray
+etc....
+
+map:
+  apply projection with each value from source.
+
+ map(projectionFunction) - returns new transformed
+
+
+import { of } from 'rxjs';
+import { map } from 'rxjs/operators'
+
+const numbers = of(1, 2, 3, 4, 5);
+
+//data processing using transformation; double it
+
+const result = numbers.pipe(
+
+    map(value => {
+        //transformation logic
+        return value * 2;
+    })
+);
+
+result.subscribe(data => console.log(data),
+    err => console.log(err), () => console.log('done'));
+
+
+refactoring:
+const numbers = of(1, 2, 3, 4, 5).pipe(
+    map(value => {
+        //transformation logic
+        return value * 2;
+    })
+);
+
+numbers.subscribe(data => console.log(data),
+    err => console.log(err), () => console.log('done'));
+
+of(1, 2, 3, 4, 5).pipe(
+    map(value => {
+        //transformation logic
+        return value * 2;
+    })
+).subscribe(data => console.log(data),
+    err => console.log(err), () => console.log('done'));
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+multi map:
+
+ pipe(
+   map()
+   map()
+   map()
+  
+)
+
+import { TodoController } from './controller/todo.controller';
+import { TodoService } from './services/todo.service';
+import { UtilityService } from './services/utility.service';
+
+const main = () => {
+    const ctrl = new TodoController(new TodoService())
+    ctrl.findAll().subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+    let utility = new UtilityService();
+
+    utility.doubleIt(1,2,3,4,5).subscribe(data => console.log(data));
+    utility.transform(1,2,3,4,5).subscribe(data => console.log(data));
+
+}
+main();
+
+
+import { from } from 'rxjs';
+import { map } from 'rxjs/operators'
+
+export class UtilityService {
+    constructor() {
+
+    }
+    doubleIt(...values) {
+        return from(values).pipe(
+            map(value => value * 2)
+        )
+    }
+    transform(...values) {
+        return from(values).pipe(
+            //double it
+            map(value => value * 10),
+            //add 2 
+            map(value => value + 2),
+
+            map(value => value * 2)
+
+        )
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+
+flattening:
+   if you have nested array , want to convert into single array - flatting processing
+
+mergeMap -flatten
+
+import { of, interval } from 'rxjs';
+import { mergeMap, map } from 'rxjs/operators';
+
+const letters = of('a', 'b', 'c');
+
+const result = letters.pipe(
+    mergeMap(x => {
+        console.log(x);
+        console.log("......")
+        return of(1, 2, 3, 4).pipe(map(y => x + y))
+    }),
+);
+result.subscribe(x => console.log(x));
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+groupBy
+  Group into observables based on provied value.
+
+
+import { of, interval, from } from 'rxjs';
+import { mergeMap, map, groupBy, toArray } from 'rxjs/operators';
+
+//
+const users = [
+    { name: 'subramanian', age: 39 },
+    { name: 'murugan', age: 55 },
+    { name: 'karthik', age: 55 },
+    { name: 'shirisha', age:10 },
+    { name: 'geetha', age: 39 },
+]
+const source = from(users);
+
+//groupBy age
+const result = source.pipe(
+    groupBy(users => users.age),
+    mergeMap(group => group.pipe(toArray()))
+);
+result.subscribe(x => console.log(x));
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Filtering:
+.........
+
+ filtering emits values based on boolean expression
+
+operators:
+
+1.filter
+2.take
+3.debounceTime
+4.find
+5.first
+6.last
+7.skip
+etc....
+
+filter:
+ apply predicate function to test true or false
+
+
+import { range, from } from 'rxjs';
+import { filter ,map} from 'rxjs/operators'
+import { TODOS } from './mock-data/todos'
+
+
+const source = range(1, 10);
+
+//even numbers /  odd numbers
+
+const evenNumbers = source.pipe(
+    filter(value => {
+        return value % 2 === 0
+    })
+);
+evenNumbers.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+//double the even numbers
+
+const doubledEvenNumbers = source.pipe(
+    filter(value => {
+        return value % 2 === 0
+    }),
+    map(value => value * 2)
+);
+doubledEvenNumbers.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+
+
+const todoStream = from(TODOS)
+
+const completedTodos = todoStream.pipe(
+    filter(todo => todo.completed)
+)
+completedTodos.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+
+.......................................................................................
+
+last,first ,take,takeLast,takeUntil : getting last value and first value
+
+
+import { range, from } from 'rxjs';
+import { filter ,last, first,map, take} from 'rxjs/operators'
+import { TODOS } from './mock-data/todos'
+
+
+const source = range(1, 10);
+
+//even numbers /  odd numbers
+
+const evenNumbers = source.pipe(
+    filter(value => {
+        return value % 2 === 0
+    })
+);
+evenNumbers.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+//double the even numbers
+
+const doubledEvenNumbers = source.pipe(
+    filter(value => {
+        return value % 2 === 0
+    }),
+    map(value => value * 2)
+);
+doubledEvenNumbers.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+
+
+const todoStream = from(TODOS)
+
+const completedTodos = todoStream.pipe(
+    filter(todo => todo.completed),
+    //last()
+    //first()
+    take(10)
+
+)
+completedTodos.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Error handling , Falut Tollerance and fail-fast Operators:
+.........................................
+
+Generally errors common in application, how to handle errors?
+
+eg:
+
+  Ui app------calling ---- backend app
+
+it could be
+  1.back end app may give results on time
+  2.back end app may give errors on time
+  3.back end app may not give result eithier success or error on time.
+
+use case:
+  a --calls --- b
+  result/error.
+  
+fallback:
+  if b fails when can i do
+
+chance giving: retry
+  if b fails first time dont fail it, rather give some breathing time , try again.
+
+
+
+how to handle failure cases?
+  
+- we have callback in subscription to handle errors 
+ - we can use error handling operators to handle errors gracefully and can give chances to recover
+
+catch and catchError,throwError
+
+
+import { throwError, of, Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators'
+
+//emit errors
+//const source = throwError("something went wrong");
+const source = Observable.create(observer => {
+    observer.next('good')
+    observer.error(new Error('something went wrong'))
+});
+//handle errors
+const handleError = source.pipe(
+    catchError(value => of('Caught : ' + value))
+)
+handleError.subscribe(data => console.log(data))
+////////////////////////////////////////////////////////////////////////////////////////
+
+retry:
+......
+  retry  in a specific numbers of times should an error occur.
+
+eg:
+  if you try http servers, if server not available, we can try for some times.
+
+import { interval, of, range, throwError } from "rxjs";
+import { mergeMap, retry, catchError } from 'rxjs/operators'
+
+const source = interval(1000)
 
 
 
 
+const result = source.pipe(
+    //if error occur, then start retry
+    mergeMap(val => {
+        if (val > 5) {
+            return throwError('Value execeed Limit')
+        }
+        return of(val);
+    }),
+    retry(2),
+    catchError(value => of('Caught : ' + value))
+);
+result.subscribe(data => console.log(data),
+    err => console.log(err), () => console.log('done'));
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Publisher and Subscriber Communication:
+
+One Publisher - One Subscriber  -  unicast communication style - one to one
+One Publisher - Many Subscribers  -  multicast communication style - one to many
+
+As of now we have discussed unicast :
+
+const source = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+const observable = from(source);
+
+observable.subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Based on Multi Cast broadcasing observables are classified into two category
+
+1.Cold observable(Cold Stream)
+2.Hot observable(Hot Stream)
+
+
+1.Cold Observable
+
+1.Observable that doesn’t emit items until a subscriber subscribes.
+
+2.If we have more than one subscriber, then observable will 
+emit sequence of items to all subscribers one by one.
+
+3.Each subscriber get "fresh copy of the data from the begining".
+
+4.Most of Observerables are Cold.
+
+
+eg:
+import {
+    Observable,
+    interval
+} from 'rxjs';
+
+/* const coldStream = new Observable(subscriber => {
+    for (let i = 0; i < 10; i++) {
+          subscriber.next(i);
+    }
+
+}); */
+const coldStream = interval(1000);
+
+//Subscribers
+setTimeout(() => {
+    console.log('Karthik is joining late');
+    coldStream.subscribe(data => {
+          console.log(" Karthik's : " + data + " who is running  ")
+    }, err => console.log(err), () => console.log('Karthik is done!'));
+}, 5000);
+
+coldStream.subscribe(data => {
+    console.log(" Subramanian's : " + data + " who is running  ")
+}, err => console.log(err), () => console.log('Subramanian is done!'));
+
+coldStream.subscribe(data => {
+      console.log(" Ram's : " + data + " who is running  ")
+}, err => console.log(err), () => console.log('Ram is done!'));
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+Hot Observable:
+
+1.Observables that don’t wait for any subscription. 
+ They start emitting items   when created.
+
+2.They don’t emit the sequence of items again for a new subscriber.
+
+3.When an item is emitted by hot observable, all the subscribers that are   subscribed will get the emitted item at once.
+
+
+There are many ways to implement hot observables:
+
+
+converting cold into hot:
+.........................
+
+operators to convert cold into hot
+  publish
+  connect
+  share
+  multicast
+  
+
+1.ConnectableObservable : publish and connect
+  publish will start publishing data to multiple subscribers and as soon as connect is called
+
+2.share method
+  Can be shared a stream among subscribers  by call
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Subjects:
+   Used for multi casting ; built in hot Observable
+
+..........................................................................................
+
+Cold to hot : using publish and connect operators
+
+import {
+    interval
+} from 'rxjs';
+import {
+    publish
+} from 'rxjs/operators';
+
+//hot using publish and connect opeartor ; convert cold to hot
+
+let hotStream = interval(1000).pipe(
+    publish()
+)
+
+hotStream.subscribe(
+    data => console.log('Subramnaian', data),
+    err => console.log(err),
+    () => console.log('completed')
+);
+
+setTimeout(() => {
+    hotStream.subscribe(
+          data => console.log('Ram', data), err => console.log(err),
+          () => console.log('completed')
+    )
+}, 3000);
+
+setTimeout(() => {
+    hotStream.subscribe(
+          data => console.log('Karthik', data), err => console.log(err),
+          () => console.log('completed')
+    )
+}, 5000);
 
 
 
- 
+hotStream.connect();
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Hot observable using share operator
+
+import {
+    interval
+} from 'rxjs';
+import {
+    tap,
+    map,
+    share
+} from 'rxjs/operators';
+
+//emit value in 1s
+const source = interval(1000);
+//log side effect, emit result
+const stream = source.pipe(
+    tap(() => console.log('***starts***')),
+    map(i => i * 2)
+);
+//make it hot.
+//share observable among subscribers
+const hotStream = stream.pipe(share());
+
+hotStream.subscribe(val => console.log(`Subramanian ${val}`));
+
+setTimeout(() => {
+    hotStream.subscribe(val => console.log(`Ram ${val}`));
+}, 5000)
+///////////////////////////////////////////////////////////////////////////////////////////
+
+                                    Subjects
+////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Subject:
+
+What is a Subject?  :create the hot observable from scratch
+  
+ In RxJS Subject is a special type of Observable that allows values to be multicasted to many Observers.
+
+While plain Observables are unicast (each subscribed Observer owns an independent execution of the Observable), Subjects are multicast.
+
+"each subscribed Observer owns an independent execution of the Observable"
+   =>Every Subscribers has its own independent copy of the Object.
+   lets say 10 subscribers, 10 Observable copy is maintained.
+
+"A Subject is a special type of Observable which shares a single execution path among observers"
+
+"You can think of this as a single speaker talking at a microphone in a room full of people. Their message (the subject) is being delivered to many (multicast) people (the observers) at once. This is the basis of multicasting. Typical observables would be comparable to a 1 on 1 conversation".
+
+There are 4 variants of subjects:
+
+1.Subject - No initial value or replay behavior.
+2.AsyncSubject - Emits latest value to observers upon completion.
+3.BehaviorSubject - Requires an initial value and emits its current value (last emitted item) to new subscribers.
+4.ReplaySubject - Emits specified number of last emitted values (a replay) to new subscribers.
+
+import {
+    Subject
+} from 'rxjs';
 
 
 
+const subject = new Subject();
+
+//dont emit before subscription
+// for (let i = 0; i < 10; i++) {
+//       subject.next(i);
+// }
+
+subject.subscribe(v => console.log(`S-1 : ${v}`))
+subject.subscribe(v => console.log(`S-2 : ${v}`))
+subject.subscribe(v => console.log(`S-3 : ${v}`))
+subject.subscribe(v => console.log(`S-4 : ${v}`))
+
+for (let i = 0; i < 10; i++) {
+    subject.next(i);
+}
+//////////////////////////////////
+
+AsyncSubject : emits last value only by calling complete();
+
+import {
+    AsyncSubject
+} from 'rxjs';
+
+const asyncSubject = new AsyncSubject();
+
+asyncSubject.subscribe(v => console.log(`Asyn Subject-1 : ${v}`))
+asyncSubject.subscribe(v => console.log(`Asyn Subject-2 : ${v}`))
+asyncSubject.subscribe(v => console.log(`Asyn Subject-3 : ${v}`))
+
+// asyncSubject.next('Async-1')
+// asyncSubject.next('Async-2')
+// asyncSubject.complete()
+for (let i = 0; i <= 10; i++) {
+    asyncSubject.next(i);
+}
+asyncSubject.complete();
+/////////////////////////////////////////////////////////////////////////////////////////
+
+2.BehaviourSubject :
+
+ BehaviourSubject emits the most recently item at the time of subscription or 
+ a default item if none has been emitted and then continues the sequence until complete.
 
 
 
+import {
+
+      BehaviorSubject
+} from 'rxjs';
+
+
+const beSubject = new BehaviorSubject(0); // 0 is the initial value
+
+beSubject.subscribe(v => console.log(`Behaviour Subject-1 : ${v}`))
+//beSubject.next(988)
+
+beSubject.subscribe(v => console.log(`Behaviour Subject-2 : ${v}`))
+///beSubject.next(9)
+
+3.ReplySubject:
+
+   "Replays" or emits old values to new Subscribers
 
 
 
+import {
+    ReplaySubject
+} from 'rxjs';
 
 
+const replaySubject = new ReplaySubject(3); // buffer 3 values for new subscribers
+replaySubject.subscribe({
+    next: (v) => console.log(`Replay Subject Subramanian : ${v}`)
+});
+replaySubject.next(1)
+replaySubject.next(2)
+replaySubject.next(3)
+replaySubject.next(4)
+replaySubject.next(5)
+
+replaySubject.subscribe({
+    next: (v) => console.log(`Replay Subject : Ram: ${v}`)
+});
+
+replaySubject.next(14)
+replaySubject.next(24)
+replaySubject.next(32)
+replaySubject.next(44)
+replaySubject.next(555)
+
+replaySubject.subscribe({
+    next: (v) => console.log(`Replay Subject : Karthik: ${v}`)
+});
+//////////////////////////////////////////////////////////////////////////////////////////////						Concurrency
+/////////////////////////////////////////////////////////////////////////////////////////////
 
 
+Threading and Schedulers:
+
+In general , Stream processing happens in main thread. suppose if you want to deligate
+the stream process in a separate thread.
+
+Why separate thread of execution?
+
+Concurrency.
+
+How to implement conncurrency?
+
+1.Using plain vannila thread implementation: not recommended 
+2.Using Schedulers : highly recommended.
+
+Scheduler Types
+                The async Scheduler is one of the built-in schedulers provided by RxJS. Each of these can be created and returned by using static properties of the Scheduler object
 
 
+null         
+                By not passing any scheduler, notifications are delivered synchronously and recursively. Use this for constant-time operations or tail recursive operations.
+
+queueScheduler               
+                Schedules on a queue in the current event frame (trampoline scheduler). Use this for iteration operations.
+
+asapScheduler
+                Schedules on the micro task queue, which is the same queue used for promises. Basically after the current job, but before the next job. Use this for asynchronous conversions.
 
 
+asyncScheduler 
+                Schedules work with setInterval . Use this for time-based operations.
+
+animationFrameScheduler
+                Schedules task that will happen just before next browser content repaint. Can be used to create smooth browser animations
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////async and sync coding by default all operations happens in the main thread.
+//async
+import {
+    Observable,
+    asyncScheduler,
+    queueScheduler,
+    from
+} from 'rxjs';
+import {
+    observeOn
+} from 'rxjs/operators';
+
+const observable = new Observable((observer) => {
+    observer.next(1);
+    observer.next(2);
+    observer.next(3);
+    observer.complete();
+}).pipe(
+    observeOn(asyncScheduler)
+);
+console.log('just before subscribe');
+observable.subscribe({
+     next(x) {
+            console.log('got value ' + x)
+      },
+      error(err) {
+            console.error('something wrong occurred: ' + err);
+      },
+      complete() {
+            console.log('done');
+      }
+});
+console.log('just after subscribe');
+
+const arraySource = from([1, 2, 3, 5, 9], asyncScheduler)
+arraySource.subscribe({
+    next(x) {
+           console.log('got value ' + x)
+     },
+     error(err) {
+           console.error('something wrong occurred: ' + err);
+     },
+     complete() {
+           console.log('done');
+     }
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 
 
 

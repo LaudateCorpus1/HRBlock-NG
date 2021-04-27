@@ -1,8 +1,46 @@
-import { TodoController } from './controller/todo.controller';
-import { TodoService } from './services/todo.service';
+//async and sync coding by default all operations happens in the main thread.
+//async
+import {
+    Observable,
+    asyncScheduler,
+    queueScheduler,
+    from
+} from 'rxjs';
+import {
+    observeOn
+} from 'rxjs/operators';
 
-const main = () => {
-    const ctrl = new TodoController(new TodoService())
-    ctrl.findAll().subscribe(data => console.log(data), err => console.log(err), () => console.log('done'));
-}
-main();
+const observable = new Observable((observer) => {
+    observer.next(1);
+    observer.next(2);
+    observer.next(3);
+    observer.complete();
+}).pipe(
+    observeOn(asyncScheduler)
+);
+console.log('just before subscribe');
+observable.subscribe({
+     next(x) {
+            console.log('got value ' + x)
+      },
+      error(err) {
+            console.error('something wrong occurred: ' + err);
+      },
+      complete() {
+            console.log('done');
+      }
+});
+console.log('just after subscribe');
+
+const arraySource = from([1, 2, 3, 5, 9], asyncScheduler)
+arraySource.subscribe({
+    next(x) {
+           console.log('got value ' + x)
+     },
+     error(err) {
+           console.error('something wrong occurred: ' + err);
+     },
+     complete() {
+           console.log('done');
+     }
+});
