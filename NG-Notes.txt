@@ -1,0 +1,725 @@
+                                          Angular 
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+What is angular
+
+Angular framework arch
+
+Angular Application
+
+Angular consists of objects.
+
+ 1.-we need class
+  class Employee{}
+ 2.-we need to create
+     new Employee()
+In Angular 
+  - we do only step 1 - declare class
+
+   -angular will do step 2 -create object .
+
+Objects collabrate each other
+   -has -a or is-a
+   
+
+   Step 1:
+     class Address{}
+     class Employee{
+           //has-a
+           constructor(private addr:Address){}
+     }
+     
+Step 2: new Employee(new Address()); // dependency injection
+
+ - we do only step 1
+  -angular will do step 2 -create object and links object -  automatic dependency injection
+  -ioc - inversion of control
+
+
+Angular core concepts
+
+Object types
+1.domain
+   employee,order,product,invoice,customer..
+   domains are created using arrays and literal objects
+
+2.infra objects
+  help to make app infra structure
+  modules,components,pipes,services,directives,meta objects(part of decorators)
+  infra objects are created by angualar declared as "classes" and decorated with decorators
+
+  @Component()
+  class Header{
+
+  }
+
+  @NgModule()
+  class LoginModule{}
+
+  @Injectable()
+  class LoginService{}
+
+
+Angular modularity:
+
+  -File based modularity - code sharing - es 6 modules - import,export,export default
+  -Logical Moduarity -Object Organization
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+Angular Framework Projects:
+..........................
+
+ Angular is collection of many sub projects.
+
+                                        Angular Framework-@angular
+					       |
+        ------------------------------------------------------------------------------
+        |              |        |       |
+     Angular cli  Angular core  COMMON CDK .......................
+       /cli
+
+HR App
+  -Emplyee app
+  -Payroll app
+  -Tax app
+
+Angular uses a convention to organize projects - called namespaces.
+  namespaces are represented by folder and npm package convention
+
+   "@angular"
+
+subprojects
+    @angular/cli
+    @angular/common
+
+   @- npm private packages.
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Project 1:
+  @angular/cli
+
+npm install -g @angular/cli
+
+cli commands:
+..............
+ng help
+ng help
+
+Available Commands:
+  add Adds support for an external library to your project.
+  analytics Configures the gathering of Angular CLI usage metrics. See https://angular.io/cli/usage-analytics-gathering.
+  build (b) Compiles an Angular app into an output directory named dist/ at the given output path. Must be executed from within a workspace directory.
+  deploy Invokes the deploy builder for a specified project or for the default project in the workspace.
+  config Retrieves or sets Angular configuration values in the angular.json file for the workspace.
+  doc (d) Opens the official Angular documentation (angular.io) in a browser, and searches for a given keyword.
+  e2e (e) Builds and serves an Angular app, then runs end-to-end tests using Protractor.
+  extract-i18n (i18n-extract, xi18n) Extracts i18n messages from source code.
+  generate (g) Generates and/or modifies files based on a schematic.
+  help Lists available commands and their short descriptions.
+  lint (l) Runs linting tools on Angular app code in a given project folder.
+  new (n) Creates a new workspace and an initial Angular application.
+  run Runs an Architect target with an optional custom builder configuration defined in your project.
+  serve (s) Builds and serves your app, rebuilding on file changes.
+  test (t) Runs unit tests in a project.
+  update Updates your application and its dependencies. See https://update.angular.io/
+  version (v) Outputs Angular CLI version.
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+create a new Project
+
+
+ng new my-first-project
+cd my-first-project
+ng serve
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+Exploring Project files and folders
+
+folders
+ -e2e
+    end to end testing information - e2e framework is protractor.
+ -node_modules
+    all angular libs @angular @somethiing
+
+ -src
+    Application code will go here
+
+files
+ package.json - project information like dep,scripts
+ 
+ts config -files
+  -ts.config - core configuration
+  -tsconfig.app.json - app specific compiler conf
+  -tsconfig.spec.json  -testing related compiler conf
+
+tslint.json 
+   config information for tslint tool.
+   static code analysis using tslint tool
+
+
+angular.json.
+  angular project automated by webpack,but we cant see any webpack.config.js file.
+ angular.json file is proxy file for webpack.
+
+ -app related configuration
+  
+karma.config.json
+    Unit testing configuration files
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+App folder structure
+
+ src
+  |
+  app
+    -will have basic application code
+  assets
+  env
+ index.html
+ main.ts - entry file for app
+ polyfills.ts - browser specific libs
+ styles.css - global css
+ test.ts - basic unit testing file
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+How to run basic angular apps?
+
+Via npm script
+ .npm start
+via cli cmd
+ ng serve
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Angular Work Flow:
+
+ main.ts ----->app.module.ts----app.component.ts
+
+ main.js ------app.module.js--->app.component.js
+
+
+
+src/main.ts
+
+import { enableProdMode } from '@angular/core';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+
+import { AppModule } from './app/app.module';
+import { environment } from './environments/environment';
+
+if (environment.production) {
+  enableProdMode();
+}
+
+platformBrowserDynamic().bootstrapModule(AppModule)
+  .catch(err => console.error(err));
+
+
+
+import { enableProdMode } from '@angular/core';
+            |                     |       |
+        function                  folder  subfolder
+
+It uses barrel export by default
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+app.module.ts
+
+ -in module is object, called container object - object contains other objects
+ angular apps can contains more container objects
+ 
+Every angular app must have one root container object -  appModule
+Every angular app may have sub containers objects - subModules
+
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+app.component.ts
+
+ Angular is mvc based framework.
+
+ MVC;
+  WE may have many controllers - product,item..... but you have to have one root controller
+ which dispatches/ routes to other controllers - front controller.
+
+
+                                               -other controllers
+Front end---------       Front Controller----->|
+                                              -other controllers
+
+
+
+                                               -other controllers
+Front end---------       AppComponent---->|
+                                               -other controllers
+
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Component:
+
+ -Component is object,UI Object.
+ -Comonent is core object withoutwhich no ui
+ -Component uses other objects-directives,services,pipes,so....
+
+At core,At very low level- 
+  Component is simple javascript function.
+  
+  function has logic to create "DOM ELEMENT/DOM MANIUPLATION"
+
+DOM: 
+   DOM is spec , defined by W3C to reprenent html elements inside javascript engine.
+
+
+HTML;
+  HTML is programming language -  dsl pl /declarative pl.
+
+HTML internal work flow:
+........................
+
+index.html -source code
+
+<html>
+<head></head>
+<title><title>
+<body>
+  <div>
+     <h1>Welcome</h1>
+  </div>
+</body>
+</html>
+
+feed into-------------------Browser
+
+loader---LOAD Code into browser
+ |
+   from file: or http:
+ |
+Parser : Parser is special compiler which converts source into lexcial tree(string tree)
+ |
+body
+  div
+     h1
+        Welcome 
+     h1
+  div
+body
+|
+ Complier-Compilation : Convert this into assembly
+|
+body -load xxx
+  div
+     h1
+        Welcome 
+     h1
+  div
+body
+
+|
+-------------------------Execution cycle------------------------------------
+HTML Execution engine : Request Os ,to allocate memory :Runtime
+
+-LinkedList
+
+body -Node
+  div -Node
+     h1 -Node
+        Welcome -Node
+     h1
+  div
+body
+| 
+ Linking the Nodes: Tree
+body  -Node
+  |
+  div -Node
+    |
+     h1 -Node
+      |
+        Welcome -Node
+        |
+     h1
+  div
+ |
+ |
+  Layout/Paint Engine: will convert nodes into pxs : final output
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Birth of Javascript:
+...................
+
+At Netscap decided to modifiy the linked list / tree via special program 
+
+netscap decided to create very light weight programming language to access the tree and modify the tree at runtime - js
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+HTML Elements types
+
+1.built in elements
+
+2.custom elements
+
+
+
+1.built in elements
+  are part of html language spec
+ h1,body,p,nav,div
+
+compiler design
+
+ source code
+                              compiler db -[div]
+                                 |
+  <div></div> ----- compile----compiler
+                                  |
+                      ------------------------
+                    if present             
+                      |
+                    execution
+                      |
+                     node
+                       |
+                     screen
+
+
+                                compiler db -[div]
+                                    |
+  <subramanian></subramaian> ----- compile----compiler
+                                  |
+                      ------------------------
+                    if present            if not present           
+                      |                        |
+                    execution              throw error - UnKnown Element
+                      |                                 |
+                     node                              Convert that element into PlanText   
+                       |                               |
+                     screen                           render
+
+
+
+2.IN 2007-2008 W3C Decided to introduce new html spec - html 5
+
+ -custom elements - how to add new elements
+ -custom attributes - how to add custom attribues on existing html specs
+
+Custom Types
+int,float =  class A{ int,float }
+
+how to teach browser to understand custom elements and attributes
+   -via Javascript
+
+
+                             compiler db -[div]
+                                    |
+ <subramanian></subramaian> ----- compile----compiler
+                                  |
+                      ------------------------
+                    if present            if not present           
+                      |                        |
+                    execution              throw error - UnKnown Element
+                      |                                 |
+                     node                              Convert that element into PlanText   
+                       |                               |
+                     screen                           render
+
+
+
+eg:
+
+class AppDrawer extends HTMLElement {...}
+
+window.customElements.define('app-drawer', AppDrawer);
+
+// Or use an anonymous class if you don't want a named constructor in current scope.
+window.customElements.define('app-drawer', class extends HTMLElement {...});
+
+
+
+  			              compiler db -[div,Subramanian]
+                                           |
+<subramanian></subramaian> --jsengine will add new defintion--- compile----compiler
+                                   |
+                      ------------------------
+                    if present            if not present           
+                      |                        |
+                    execution              throw error - UnKnown Element
+                      |                                 |
+                     node                              Convert that element into PlanText   
+                       |                               |
+                     screen                           render
+
+////////////////////////////////////////////////////////////////////////////////////////////
+Angular and Custom Elements:
+
+ Angular follows custom element spec in order to create apps.
+
+
+  Custom Element
+  <app-root></app-root>
+                  |
+                  ------------->|import { Component } from '@angular/core';
+
+				@Component({
+ 				 selector: 'app-root',
+  				templateUrl: './app.component.html',
+  				styleUrls: ['./app.component.css']
+				})
+				export class AppComponent {
+					  title = 'ng-helloworld';
+				}
+
+
+<app-root></app-root> ---------------function AppComponent(){ 
+                                           //dom code
+                                     }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Angular coding best pratices:
+...............................
+https://angular.io/guide/styleguide
+
+Custom elements Naming convention:Component selectors
+
+ <app-root> - recommended
+  
+ <approot>  - not recommended.
+
+Do use dashed-case or kebab-case for naming the element selectors of components.
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+How to create Component?
+
+Component consist of following things?
+
+1.template
+    collection of angular instructions
+
+Angular instructions:
+1.1. html elements - div,p,span
+1.2. data binding symbols -special instructions
+     *,[],(),#,directives <>,pipes(|)
+
+2.css
+   style sheet
+3.code
+   logic written in typescript 
+ variables,methods,interfaces
+
+Comonent has follwing things?
+
+ -dependency
+     -services
+
+Steps:
+
+1.declare component class and export it.
+
+export class AppComponent {
+
+}
+
+2.decorate component class. -@Component
+Decorator that marks a class as an Angular component and provides configuration metadata that determines how the component should be processed, instantiated, and used at runtime.
+
+3.meta Object {}
+@Component({})
+
+@Component({})
+export class AppComponent {
+
+}
+
+4.provide meta information
+ selector - custom element name
+ template - instructions
+ css - styles for component
+
+
+
+Types of templates:
+
+1.inline template
+   template is part of component itself , provided within string
+  template: `
+           <div>
+             <h1>HR Block Angular Apps welcomes you</h1>
+           </div>
+  `
+2.external template
+   template is outside component and provided via a separate .html file
+templateUrl: './app.component.html',
+
+import { Component } from "@angular/core";
+
+@Component({
+  selector: 'app-root',
+  templateUrl:'./app.component.html'
+})
+export class AppComponent {
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+How objects are created, who creates object and how objects are available? 
+  -IOC AND Dependency Injection.
+
+
+Angular never creates object of any class until you tell: Instrctions we need to give to 
+DI injector System.
+
+if you tell , then Ng Injector system creates object and links objects by looking constructor
+constructor(private var:type);
+
+
+Where we can specify this information? - di info
+
+Inside a module  - could be main or sub module.
+
+How to create Module Object? How to write di code?
+
+Steps:
+
+1.declare class
+export class AppModule { }
+
+2.decorate the class : @NgModule
+Decorator that marks a class as an NgModule and supplies configuration metadata.
+
+Decorator Meta data contains
+
+1.DI INFO : object creation information
+
+1.1.view Objects
+ components,directives,pipes
+ declarations:[]
+  declarations: [AppComponent], // view objects - component,pipe,directives
+
+
+1.2.module objects-submodules
+  imports: [BrowserModule], //all sub modules
+
+
+1.3.services/providers
+  providers: []
+
+
+2.Root component entry.
+  bootstrap: [AppComponent]
+..............................................................................................
+
+import { NgModule } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
+import { AppComponent } from "./app.component";
+
+@NgModule({
+  declarations: [AppComponent], // view objects - component,pipe,directives
+  imports: [BrowserModule], //all sub modules
+  providers: [],
+  //which component is entry /main/rot
+  bootstrap: [AppComponent]
+
+})
+export class AppModule { }
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+How to create our own components:
+
+-create component in the app module itself.
+
+style guide: files names
+
+descriptive name
+
+ greeter.component.ts
+
+
+class Name convention
+
+ -noun
+ -meaningul to domain
+ -end with Component,Service,Directive,Pipe
+
+eg:
+   GreeterComponent, GreeterService,GreeterPipe
+
+
+steps:
+
+1.create component
+
+app/greeter.component.ts
+
+import { Component } from "@angular/core";
+
+@Component({
+    selector: 'app-greeter',
+    template: `
+        <h1>Greeter Component</h1>
+    `
+})
+export class GreeterComponent {
+
+}
+
+2.DI
+import { NgModule } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
+import { AppComponent } from "./app.component";
+import { GreeterComponent } from "./greeter.component";
+
+@NgModule({
+  declarations: [AppComponent, GreeterComponent], // view objects - component,pipe,directives
+  imports: [BrowserModule], //all sub modules
+  providers: [],
+  //which component is entry /main/rot
+  bootstrap: [AppComponent]
+
+})
+export class AppModule { }
+
+3.refer inside app.component.html or in the template
+
+<div>
+  <h1>HR Block Angular Apps welcomes you</h1>
+  <app-greeter></app-greeter>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
