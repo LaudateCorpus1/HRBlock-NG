@@ -109,8 +109,11 @@ ng help
 ng help
 
 Available Commands:
+
   add Adds support for an external library to your project.
+
   analytics Configures the gathering of Angular CLI usage metrics. See https://angular.io/cli/usage-analytics-gathering.
+
   build (b) Compiles an Angular app into an output directory named dist/ at the given output path. Must be executed from within a workspace directory.
   deploy Invokes the deploy builder for a specified project or for the default project in the workspace.
   config Retrieves or sets Angular configuration values in the angular.json file for the workspace.
@@ -711,12 +714,738 @@ export class AppModule { }
   <h1>HR Block Angular Apps welcomes you</h1>
   <app-greeter></app-greeter>
 </div>
+&&&&&&&&&&&&&&&&&&&&&&*******************************&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+file and artificates  creation automation:
+
+When ever you create any infra object templates, it requires additional aritificates
+
+create component.
+
+ component file
+   app.component.ts 
+ template file
+   app.component.html
+ style file
+    app.component.css
+
+ unit testing file
+    app.component.spec.ts
+
+Required files
+ component file
+   app.component.ts 
+ unit testing file
+    app.component.spec.ts
+
+greeter component creations
+
+1.create all files
+ greeter.component.ts 
+ greeter.component.html
+ greeter.component.css
+ greeter.component.spec.ts
+
+2.write code inside component
+
+3.depdenency injection inside modules
+
+4.refering component inside another file
+
+what if i want to keep all files inside folders.
+
+Coding Styles:
+
+ project must be organized into folders are based on domain,features,utilities
+
+app folder must have only appcomponent, and app module only
+
+ src
+   |
+   app
+     |
+     greeter
+      greeter.component.ts 
+      greeter.component.html
+      greeter.component.css
+      greeter.component.spec.ts
+      index.ts
+
+Dont forget to add "Barrel export"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+How to automate the above process?
+
+-create folder
+-create files
+-update component dependencies inside module
+
+
+component
+
+ng generate component <name> [options]
+ng g component <name> [options]
+ng g c <name> [options]
+
+
+options:
+--flat	
+Create the new files at the top level of the current project.
+
+boolean	false
+
+
+--inline-style	
+Include styles inline in the component.ts file. Only CSS styles can be included inline. By default, an external styles file is created and referenced in the component.ts file.
+
+Aliases: -s
+
+boolean	false
+
+
+--inline-template	
+Include template inline in the component.ts file. By default, an external template file is created and referenced in the component.ts file.
+
+Aliases: -t
+
+boolean	false
+
+--module	
+The declaring NgModule.
+
+Aliases: -m
+
+string
+
+--skip-tests	
+Do not create "spec.ts" test files for the new component.
+
+boolean	false
+
+C:\session\HrBlock\ng-clifeatures>ng g c hello --module app
+CREATE src/app/hello/hello.component.html (20 bytes)
+CREATE src/app/hello/hello.component.spec.ts (619 bytes)
+CREATE src/app/hello/hello.component.ts (271 bytes)
+CREATE src/app/hello/hello.component.css (0 bytes)
+UPDATE src/app/app.module.ts (517 bytes)
+
+
+C:\session\HrBlock\ng-clifeatures>ng g c util/logger --module app
+CREATE src/app/util/logger/logger.component.html (21 bytes)
+CREATE src/app/util/logger/logger.component.spec.ts (626 bytes)
+CREATE src/app/util/logger/logger.component.ts (275 bytes)
+CREATE src/app/util/logger/logger.component.css (0 bytes)
+UPDATE src/app/app.module.ts (670 bytes)
+
+ The above creates logger folder inside util folder and creates files
+
+C:\session\HrBlock\ng-clifeatures>ng g c util/hai    --module app  --flat true
+CREATE src/app/util/hai.component.html (18 bytes)
+CREATE src/app/util/hai.component.spec.ts (605 bytes)
+CREATE src/app/util/hai.component.ts (263 bytes)
+CREATE src/app/util/hai.component.css (0 bytes)
+UPDATE src/app/app.module.ts (742 bytes)
+
+--flat true:  dont create new folder use existing folder itself
+
+
+How to create comonent without external html,css,and how to skip spec files?
+
+
+C:\session\HrBlock\ng-clifeatures>ng g c product  --module app  --inline-template true  --inline-style true --skip-tests true
+CREATE src/app/product/product.component.ts (268 bytes)
+UPDATE src/app/app.module.ts (824 bytes)
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+                                    Data Binding:
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+UI Consist of 
+
+1. UI Elements - div,p,h1,li,table
+2. data        - customers,products
+
+static representation
+
+ <p>Name : Subramaian</p>
+
+dynamic representation;
+ data which is coming from server/ computed one
+   -via js.
+
+via data binding we can represent data dynamically
+
+
+Templates && Views :
+
+ if you want to understand Templates && Views , just compare class and object.
+
+  class - compile time representation
+  object - runtime representation
+
+  Template -  compile time representation
+  View  -  runtime representation.
+
+Template:
+Collection of angular instructions - html + special charaters({{}},*,#..)
+Template is passive instruction
+Templates  are design Portion of Component, Where Component having models and its logic.
+Components are linked with one another via Templates.
+Templates are parsed , converted as Dom elements
+Views are Active representation.
+
+
+State:
+ Object data is called state.
+ State is subject change
+ In MVC, State is called "model"
+ State is defined inside controller(Component).
+Data /Model Represents Component State.
+Models are transferred from and to Component.
+Data can be primitive
+Data Can be literal objects
+Data can be arrays
+
+Data Binding
+
+Transferring Data from  and to Component and View
+
+--------------------------------------------------------------------------------
+
+
+Data binding types:
+
+Interpolation  {﻿{...}} 
+Property Binding []
+Event Binding  (click)
+Two way data Binding [()]
+class Binding []
+style binding []
+Attribute binding []
+template reference #
+
+Interpolation  {﻿{...}} :
+.......................
+
+ State from component to View
 
 
 
+state declaration inside component:
+..................................
+
+ng g c interpolation  --module app   --inline-style true --skip-tests true
+CREATE src/app/interpolation/interpolation.component.html (28 bytes)
+CREATE src/app/interpolation/interpolation.component.ts (272 bytes)
+UPDATE src/app/app.module.ts (424 bytes)
+
+
+Eg:
+
+interpolation.component.ts
+
+import { Component } from '@angular/core';
+import { Address } from '../types/address.type';
+
+@Component({
+  selector: 'app-interpolation',
+  templateUrl: './interpolation.component.html',
+  styles: [
+  ]
+})
+export class InterpolationComponent {
+  //state 
+  message: string = "Greetings"
+  counter: number = 100;
+  isValid: boolean = true;
+  //object
+  address: Address = {
+    city: 'coimbatore',
+    state: 'Tamil Nadu',
+    zipcode: '642207'
+  }
+
+}
+interpolation.component.html
+
+<div>
+    <h1>InterPolation</h1>
+    <h1>Primitives</h1>
+    <h2>String {{message}}</h2>
+    <h2>Numbers {{counter}}</h2>
+    <h2>Boolean {{isValid}}</h2>
+    <h1>Object</h1>
+    <h3>{{address.city}} {{address.state}} {{address.zipcode}}</h3>
+    <h1>Expression</h1>
+    <h2>The Sum {{10 * 2}}</h2>
+</div>
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Property Binding: []
+.................
+Three types of property binding
+
+1.Element - html element attribute
+ 
+ static ui:
+  image rendering
+  <h2>Static UI</h2>
+  <img src=".././assets/phone.png"/>
+2.what if i want to render image dynamically : property binding syntax;
+   attribute binding
+
+ dynamic attribute binding - []
+
+  <anyhtmlelement [domproperty] =dynamic value/>
+
+  <img [src]="variablefromcomonent"/>
+
+<h1 style="text-align: center;">
+ Property Binding
+</h1>
+<h1>Element Binding</h1>
+<h2>Static UI</h2>
+<img src=".././assets/phone.png"/>
+<div>
+    <button disabled >Enable</button>
+</div>
+<h2>Dynamic UI</h2>
+<img [src]="imgUrl"/>
+<div>
+    <button [disabled]="isEnabled" >Enable</button>
+</div>
+
+component class
+export class ElementbindingComponent implements OnInit {
+
+  imgUrl: string = ".././assets/phone.png"
+  isEnabled: boolean = true;
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+
+********************************************************************************
+
+Directive : to be discussed latter
+
+<div [ngClass]="{'special': isSpecial}"></div>
+*************************************************************************************
+How to pass data to custom elements?
+
+Component property Binding:
+
+ <app-greeter [message]="Hello" > </app-greeter>
+ 
+steps:
+
+1.pass data from the template
+
+<app-greeter [message]="Hello" > </app-greeter>
+ 
+What type of data you can pass?
+ -primitives -  including hardcoded values
+ -objects
+ -arrays
+
+Any values should be passed with in "" only
+
+Hard coded values:
+
+1.string;
+   "'Hello'"
+
+eg:
+
+app.component.html
+<app-greeter [message]="'Hello'" ></app-greeter>
+
+greeter.component.ts
+export class GreeterComponent{
+
+  @Input("message")
+  message:string
+}
+
+greeter.component.html
+<div>
+    <h1>Component Property Binding</h1>
+     <h2>Property Value {{message}}</h2>
+</div>
+/////////////////////////////////////////////////////////////////////////////////////////
+
+Use case : how to pass data from appcomponent data to greeter component
+
+app.component.ts
+export class AppComponent {
+  title = 'ng-databinding';
+  msg:string = "Hello I am coming from App Component"
+}
+app.component.html
+<app-greeter [message]="msg" ></app-greeter>
+
+
+greeter.component.ts
+export class GreeterComponent{
+
+  @Input("message")
+  message:string
+}
+
+greeter.component.html
+<div>
+    <h1>Component Property Binding</h1>
+     <h2>Property Value {{message}}</h2>
+</div>
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Property Binding Use cases : @Input
+
+<app-greeter [message]="msg" ></app-greeter>
+
+@Input("message")
+message:string
+
+if prop name and instance variable is same, we need not give prop name
+
+<app-greeter [message]="msg" ></app-greeter>
+
+@Input()
+message:string
+
+
+if prop name and instance variable is differ, we need to give prop name
+
+<app-greeter [message]="msg" ></app-greeter>
+
+  @Input("message")
+  someMessage: string;
+
+Concept :
+.........
+
+Uni directional data flow model
+Component communcation patterns.
+
+In Component driven architectures, data is supplied from parent to child - uni directional 
+data flow model
+
+
+Uni directional data flow model:
+ Component  Responsiblity:
+
+   -state and logic
+   -UI Mark Up
+
+According component driven design;
+
+  - one component should have application state(customers,invoice order) and apis
+
+  - another component should have only ui to display application statement
+
+
+ One Component responsible for interacting with api,get data
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+C:\session\HrBlock\ng-databinding>ng g c employee/employeecontainer  --module app   --inline-style true --skip-tests true --flat true
+CREATE src/app/employee/employeecontainer.component.html (32 bytes)
+CREATE src/app/employee/employeecontainer.component.ts (284 bytes)
+UPDATE src/app/app.module.ts (751 bytes)
+
+C:\session\HrBlock\ng-databinding>ng g c employee/employeepresentation  --module app   --inline-style true --skip-tests true --flat true
+CREATE src/app/employee/employeepresentation.component.html (35 bytes)
+CREATE src/app/employee/employeepresentation.component.ts (293 bytes)
+UPDATE src/app/app.module.ts (877 bytes)
+
+/////////////////////////////////
+
+app.componnet.html
+<app-employeecontainer></app-employeecontainer>
 
 
 
+employeecontainer.component.ts
+
+import { Component, OnInit } from '@angular/core';
+import { Employee } from '../types/employee.type';
+
+@Component({
+  selector: 'app-employeecontainer',
+  templateUrl: './employeecontainer.component.html',
+  styles: [
+  ]
+})
+export class EmployeecontainerComponent implements OnInit {
+
+  employee: Employee = {
+    id: 1,
+    name: 'Subramanian',
+    salary: 1000,
+    address: {
+      city: 'Coimbatore',
+      state: 'Tamil Nadu',
+      zipcode: '642207'
+    }
+  }
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+
+employeecontainer.component.html
+
+<app-employeepresentation [employee]="employee"> </app-employeepresentation>
+
+///////////////
+
+employeepresentation.component.ts
+
+import { Component, Input, OnInit } from '@angular/core';
+import { Employee } from '../types/employee.type';
+
+@Component({
+  selector: 'app-employeepresentation',
+  templateUrl: './employeepresentation.component.html',
+  styles: [
+  ]
+})
+export class EmployeepresentationComponent implements OnInit {
+
+  @Input()
+  employee: Employee;
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+employeepresentation.component.html
+<h1>Employee Details</h1>
+<h2>Id : {{employee.id}}</h2>
+<h2>Name : {{employee.name}}</h2>
+<h2>Salary : {{employee.salary}}</h2>
+<app-address [address]="employee.address"></app-address>
+
+///////////////////////////////////
+
+address.component.ts
+
+import { Component, Input, OnInit } from '@angular/core';
+import { Address } from '../types/address.type';
+
+@Component({
+  selector: 'app-address',
+  templateUrl: './address.component.html',
+  styles: [
+  ]
+})
+export class AddressComponent implements OnInit {
+
+  @Input()
+  address: Address
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+address.component.html
+
+<address>
+    <p>{{address.city}}</p>
+    <p>{{address.state}}</p>
+    <p>{{address.zipcode}}</p>
+</address>
+////////////////////////////////////////////////////////////////////////////////////////////
+                             Event Driven Programming
+////////////////////////////////////////////////////////////////////////////////////////////
+
+How we work events?
+
+event:
+  something happened, if something happened react it.
+
+Event:
+  In javascript "event" is represented by object called Event Object.
+
+Listener:
+  In js listener is callback function, registered for a particular event
+
+Types of events
+  -hardware events
+      - mouse 
+      - keyboard
+      - touch
+  - application events
+       onload,oncomplete
+
+Event Architecture:
+...................
+
+Javascript               
+
+ Button - DOM Object
+
+html
+  <button>
+
+Inside browser
+  
+   Node
+
+Every dom object been registered with hardwares such as mouse,keyboards: Entry points to receive hardware singles.
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+How to work with events/
+
+1.event binding
+2.adding listener
+
+
+1.event binding:()
+
+<button (click)="onSave()">Save</button>
+           |         |
+        nameofevent nameofthe listener
+
+Coding Standard for listner methods:
+
+ -it has to start with "on+MethodName"
+
+listener is method inside component class.
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+
+1.Simple event
+<div>
+    <h1>Click Event</h1>
+    <button (click)="onSave()">Save</button>
+</div>
+
+export class EventbindingComponent {
+  //listener
+  onSave(): void {
+      console.log('button is clicked')
+  }
+}
+
+2.How to pass input to the listener method
+
+<div>
+    <h1>Sending Input to Listener</h1>
+    <button (click)="onUpdate('user')">Save</button>
+</div>
+
+  onUpdate(value: string): void {
+    console.log(value);
+  }
+
+3.How to read Input from user and send to listener
+
+  how to refer dom elmement inside listener function.
+   
+   btn.addEventListener('click',function(event:EventTarget) {
+	 //what if i want to access btn properties
+    
+   })
+  
+EventTarget Object purpose:
+  - To get dom object inside listener
+  - To control event buble and propagation.
+
+How to get event object(eventtarget) in angular?
+    "$event" - it is global variable provided by angular to access event
+   
+
+<div>
+    <h1>Getting Event Object</h1>
+    <button (click)="getEvent($event)">EventObject</button>
+</div>
+<div>
+    <h1>Getting input from the User and send to method</h1>
+    <input (input)="onUpdate($event)" />
+</div>
+
+  getEvent(evt: MouseEvent) {
+    console.log(evt) //event
+    console.log(evt.target) //button
+  }
+
+  onUpdate(ctrl: any): void {
+    //console.dir(value.target);
+    //console.log(ctrl.target.value)
+  }
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+                               View ------->Component ---->View
+
+Two way data binding:
+
+  Passing data from View to Component
+  Component to View
+
+  <h1>Getting input from the User and send to method</h1>
+    <h2>{{message}}</h2>
+    <input (input)="onUpdate($event)" />
+    <button (click)="getTextboxValue()">TextboxValue</button>
+</div>
+
+
+export class EventbindingComponent {
+
+  message: string = "default Value"
+  onUpdate(ctrl: any): void {
+    //console.dir(value.target);
+    //console.log(ctrl.target.value)
+    // ctrl.target.value
+    //two way data binding
+    this.message = ctrl.target.value
+  }
+  getTextboxValue(): void {
+      alert(this.message)
+  }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Code Refactoring:
+
+1.without event listener.
+
+    <input (input)="onUpdate($event)" />
+
+    <input (input)="message=$event.target.value"/>
+
+2.Property and event binding
+      
+  <input [value]="message" (input)="message=$event.target.value"/>
+
+
+2.event+property  [(ngModel)] without eventlistenter and event binding itself
+
+ngModel : it is object, used to transfer data : dto object
+        
+<input [(ngModel)]="message">
+
+rc/app/eventbinding/eventbinding.component.html:32:16 - error NG8002: Can't bind to 'ngModel' since it isn't a known property of 'input'.
+
+32         <input [(ngModel)]="message">
+                  ~~~~~~~~~~~~~~~~~~~~~
+
+ngModel is not part of angular core, we need inject one more module - 
+
+////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
