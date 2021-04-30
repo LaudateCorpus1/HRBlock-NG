@@ -1443,11 +1443,938 @@ rc/app/eventbinding/eventbinding.component.html:32:16 - error NG8002: Can't bind
 32         <input [(ngModel)]="message">
                   ~~~~~~~~~~~~~~~~~~~~~
 
-ngModel is not part of angular core, we need inject one more module - 
+ngModel is not part of angular core, we need inject one more module - FormsModule
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+                                         CSS
+////////////////////////////////////////////////////////////////////////////////////////////
 
+How to add css to dom elements?
+
+via class attribute
+via style attribute
+
+class attribute
+
+ <div class="container">
+
+CSS in angular:
+
+-global styles
+  are applied across the app.
+
+you can have project specific style sheet
+src/styles.css 
+
+you can have thrid party css frameworks 
+-bootstrap
+npm install bootstrap
+
+configuration:
+angular.json
+    "styles": [
+              "./node_modules/bootstrap/dist/css/bootstrap.css",
+              "src/styles.css",
+              "node"
+            ],
+
+style attribute
+<h1 style="text-align: center;"> Styles </h1>
+
+-component spefic styles
+   we can have component sepcific styles 
+
+style:
+
+styleUrl
+
+  styles: [`
+      h1 {
+           color: green;
+      }
+   `  ]
+})
+
+as of now we have applied styles are static. how to apply dynamic styles.
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+Dynamic css:
+
+Property binding and css: dynamic style
+........................................
+
+class="container"
+style="color:red"
+
+ These styles are called static, once it applied cant be changed during rendering.
+
+
+how to change style dynamically or how to apply new style dynamically.
+
+<h1 [style.stylename]="booleancondition ? value1:value2">
+<h2 [class.classname]="booleancondition">  
+ 
+  if booleancondition is true, then style will be applied else wont be applied
+
+
+
+
+<h1 style="text-align: center;"> Styles </h1>
+
+<div [class.active]="isActive">
+    <p>Hello</p>
+</div>
+<button (click)="changeStyle()">Apply Color</button>
+
+
+export class StyleComponent{
+
+  isActive: boolean = false
+  changeStyle() {
+    this.isActive = !this.isActive
+  }
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+                                   Custom Events
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Parent to child Communication
+   via property binding and @Input
+
+Child to Parent Communication:
+
+Child -Parent Communication:
+
+-Via Events : Custom Events:
+
+EventEmitter Object is used to communicate
+
+@Output
+
+We need to write two components
+
+1.Parent Component
+2.Child Component
+
+
+Use case : if child component clicks button, ---Listener is called---Inside Listerner
+ --Write code to send data To parent.
+
+                            Parent <---EventEmitter<---Child
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Steps : write two components
+
+1.parent
+2.child
+
+
+Parent
+
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-parent',
+  templateUrl: './parent.component.html',
+  styles: [
+  ]
+})
+export class ParentComponent implements OnInit {
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+
+2.Child Component
+
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-child',
+  templateUrl: './child.component.html',
+  styles: [
+  ]
+})
+export class ChildComponent implements OnInit {
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+
+Step 2:
+
+ EventEmitter:
+
+Use in components with the @Output directive to emit custom events synchronously or asynchronously, and register handlers for those events by subscribing to an instance.
+
+1.EventEmitter is used to broad cast values to Parent Components
+
+class EventEmitter<T> extends Subject {
+  constructor(isAsync?: boolean): EventEmitter<T>
+  emit(value?: T): void
+  subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void): Subscription
+}
+
+2.EventEmitter object is Subclass Rxjs Subject.
+
+create EventEmitter Object of type in child compoent.
+
+eventemitter is used to send custom events.
+
+   onSendRequest = new EventEmitter<string>();
+
+3.We have decorate eventemitter with @Output()
+
+  @Output()
+  onSendRequest = new EventEmitter<string>();
+
+4.send data to Parent Component
+
+    <div>
+        <input [(ngModel)]="message">
+    </div>
+    <div>
+        <button (click)="onSend()">Send To Parent</button>
+    </div>
+
+export class ChildComponent {
+
+  message: string = "Good Value"
+  //event emitter Declaration
+  @Output()
+  onSendRequest = new EventEmitter<string>();
+  onSend() {
+    alert('sending data to parent')
+    //emit data  -  next method in subject
+    this.onSendRequest.emit(this.message)
+  }
+
+}
+
+5.Listens event and grab the data from the Child
+
+<div>
+    <h1 style="text-align: center;">Parent Component</h1>
+    <h2>{{childMessage}}</h2>
+</div>
+<hr/>
+<app-child (onSendRequest)="onReadData($event)" ></app-child>
+
+
+export class ParentComponent {
+
+  childMessage: string;
+
+  onReadData(event: any) {
+    this.childMessage = event
+  }
+
+}
+
+/////////////
+
+final code :
+
+Child:
+<div>
+    <h1 style="text-align: center;">Child Component</h1>
+    <div>
+        <input [(ngModel)]="message">
+    </div>
+    <div>
+        <button (click)="onSend()">Send To Parent</button>
+    </div>
+</div>
+
+
+export class ChildComponent implements OnInit {
+
+  message: string = "Good Value"
+  //event emitter Declaration
+  @Output()
+  onSendRequest = new EventEmitter<string>();
+
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+  onSend() {
+    alert('sending data to parent')
+    //emit data  -  next method in subject
+    this.onSendRequest.emit(this.message)
+  }
+
+}
+
+
+Parent:
+
+<div>
+    <h1 style="text-align: center;">Parent Component</h1>
+    <h2>{{childMessage}}</h2>
+</div>
+<hr/>
+<app-child (onSendRequest)="onReadData($event)" ></app-child>
+
+export class ParentComponent {
+
+  childMessage: string;
+  onReadData(event: any) {
+    this.childMessage = event
+  }
+
+}
+////////////////////////////////////////////////////////////////////////////////////////////
+                                    Directives
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+What is directive?
+  Directive is custom element / attribute..
+
+<app-root> ,<app-root [title]>
+
+
+Types of Directives:
+1.Template directive
+2.Structural directive
+3.Attribute directive
+
+1.Template directive
+   The directive with Template ; all components create template directive
+  <app-root> ----------------template
+  <app-profile>--------------template
+
+All component's meta data is inherited from Directive meta.
+Directive is parent , Component is child
+
+
+2.Structural Directive
+   It is type of directive, used to change HTML Layouts.
+   They shape or reshape the DOM's "Structure" typically by adding,removing and manipulating
+   the host elements to which they attached.
+   
+  -Host element means html elements eg div,span,li,table.
+  -It is one of the "special attribute" directive
+  -All structural directive starts with "*" notation.
+
+Built in structural directives
+
+1.*ngFor : for loop
+2.*ngIf  : if condition
+3.*ngSwitch : switch
+
+   
+
+List /Array rendering:
+......................
+
+Layouts:
+1.List view Layout
+   -ul li
+2.Card View Layout
+  div
+3.Grid View Layout
+  table tr td
+
+
+1.for Loop: *ngFor
+
+-where ever you want to repeate elements
+
+element could be dom element or custom elements
+
+eg:
+ <anyelement *ngFor="condition">
+
+ <div *ngFor="let variableName of arrayname">
+       {{VariableName.property}}
+ </div>
+ This code will create more div elements
+
+ <app-item-list *ngFor="">
+
+
+Static view:
+<ul>
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+
+    </ul>
+
+<div>
+    <h1 style="text-align: center;">For loop</h1>
+
+    <!--ul element-->
+    <ul>
+        <li *ngFor="let i of numbers">{{i}}</li>
+    </ul>
+    <!--Ui element for tod-->
+    <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let todo of todos">
+            <span class="badge badge-primary badge-pill"> {{todo.id}} </span> {{todo.title}}
+        </li>
+
+    </ul>
+    <div class="card" *ngFor="let todo of todos">
+        <h5 class="card-header">{{todo.id}}</h5>
+        <div class="card-body">
+            <h5 class="card-title">{{todo.userId}}</h5>
+            <p class="card-text">{{todo.title}}</p>
+            <a href="#" class="btn btn-primary">Update</a>
+        </div>
+    </div>
+</div>
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+*ngIf:
+.......
+ how to add if ... else
+
+
+2.*ngIf  : if condition
+
+ add or remove dom element based on boolean condition
+ 
+<div hidden> - true/false - div element will not visible
+
+   <div hidden>       - true you tell hide it  
+
+     <h1>Hello</h1>
+   </div>
+
+in order to implement we have another way using [hidden] attribute
+
+    <div [hidden]="isHidden">
+        <h1>Hai</h1>
+     </div>
+     <button class="btn btn-success" (click)="toogleEnabled()">Toggle:Ifelse</button>
+
+if you are implementing toggling .
+
+ add or remove dom element dynamically.
+
+Caution : dont add or remove elements dynamically which degrades performances.
+
+inside of that use "hidden" attribute
+
+ <!--Show and Hide-->
+
+    <div *ngIf="isHidden">
+        <h1>Hello</h1>
+    </div>
+
+Recommended:
+
+  <div [hidden]="isHidden">
+        <h1>Hai</h1>
+    </div> 
+/////////////////////////////////////////////////////////////////////////////////////////
+
+if ..else 
+
+  <!--if else lader-->
+
+    <div *ngIf="isEnabled; else mycondition">
+        <h1>You have Facility!</h1>
+    </div>
+
+   <ng-template #mycondition>
+      <h1>Sorry! Facility is not availbale</h1>
+   </ng-template>
+
+# : template reference variable
+
+Progress bar:
+............
+   <h2>
+    <div *ngIf="loading; else notLoading  ">
+      <h2>{{status}}</h2>
+    </div>
+  </h2>
+  <ng-template #notLoading>
+    <div>
+      <h2>{{status}}</h2>
+    </div>
+  </ng-template>
+
+
+
+/////////
+
+<div>
+    <h1 style="text-align: center;">If else</h1>
+
+    <button class="btn btn-success" (click)="toggle()">Toggle</button>
+    <!--Show and Hide-->
+    <div *ngIf="isHidden">
+        <h1>Hello</h1>
+    </div>
+    <!-- <div [hidden]="isHidden">
+        <h1>Hai</h1>
+    </div> -->
+
+    <button class="btn btn-success" (click)="toogleEnabled()">Toggle:Ifelse</button>
+   
+    <div *ngIf="isEnabled; else mycondition">
+        <h1>You have Facility!</h1>
+    </div>
+
+    <ng-template #mycondition>
+        <h1>Sorry! Facility is not availbale</h1>
+    </ng-template>
+
+    <h2>
+        <div *ngIf="loading; else notLoading  ">
+          <h2>{{status}}</h2>
+        </div>
+      </h2>
+      <ng-template #notLoading>
+        <div>
+          <h2>{{status}}</h2>
+        </div>
+      </ng-template>
+</div>
+
+
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-ifelse',
+  templateUrl: './if-else.component.html',
+  styles: [
+  ]
+})
+export class IfElseComponent implements OnInit {
+
+  isHidden: boolean = false
+  isEnabled: boolean = false;
+  loading: boolean = true;
+
+  status: string = 'Loading......'
+
+  constructor() {
+    //Progress bar time: using timer
+    setTimeout(() => {
+      this.loading = !this.loading;
+      this.status = 'Finished'
+    }, 5000)
+  }
+
+  ngOnInit(): void {
+  }
+  toggle() {
+    this.isHidden = !this.isHidden
+  }
+  toogleEnabled() {
+    this.isEnabled = !this.isEnabled;
+  }
+}
+///////////////////////////////////////////////////////////////////////////////////////
+
+Switch case:
+
+<div class="container">
+    <h1 style="text-align: center;">Swich case </h1>
+    <input [(ngModel)]="input">
+    <button (click)="showFeedback()">Show Feedback</button>
+
+    <div [ngSwitch]="feedback">
+        <p *ngSwitchCase="'good'">Good</p>
+        <p *ngSwitchCase="'verygood'">Very Good</p>
+        <p *ngSwitchCase="'bad'">Bad</p>
+        <p *ngSwitchDefault>Your input is not matching</p>
+    </div>
+    <div [ngSwitch]="feedback">
+        <ng-template [ngSwitchCase]="'good'">
+            <h3>Good</h3>
+        </ng-template>
+        <ng-template [ngSwitchCase]="'verygood'">
+            <h3>Very Good</h3>
+        </ng-template>
+        <ng-template [ngSwitchCase]="'bad'">
+            <h3>bad</h3>
+        </ng-template>
+        <ng-template ngSwitchDefault>
+            <h3>Your input is not matching</h3>
+        </ng-template>
+    </div>
+
+</div>
+
+export class SwitchcaseComponent implements OnInit {
+
+  feedback: string = "good"
+  input:string ="";
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+  showFeedback() {
+    this.feedback = this.input
+  }
+
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+3.Attribute directive :
+
+ Adding extra behaviour to existing dom elements.
+
+eg:
+ <div subu="">
+
+How to create our own attribute directive.
+
+Steps:
+
+1.declare directive class and decorate it
+
+import { Directive } from '@angular/core';
+
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+
+  constructor() { 
+    console.log('directive is applied')
+  }
+
+}
+
+Syntax
+-app=>root prefix
+-Highlight - Name of the Directive
+
+now you can apply this on any dom element as attribute
+
+ <h1 appHighlight >Hello</h1>
+
+2.DI inisde any modules- app
+
+declarations: [HighlightDirective]
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+				 DOM MANIPULATION
+..............................................................................................
+
+
+Access Object , change its values
+
+ h2------Object---->change its value
+
+Using js you change it.
+
+ var element = document.getElementByid('xxx')
+
+
+
+Ways of dom manipulation:
+
+1.via structural directive
+
+2.via $event object.
+
+3.Javascript way
+   access dom element directly like js inside angular via attribute directive.
+
+AttributeDirecive is object through which you can access native dom elements and do dom maniuplation.
+
+1.INSIDE Directive
+  using "ElementRef" -Object
+A wrapper around a native element inside of a View.
+
+this.element.nativeElement.style.backgroundColor = "yellow";
+
+How to use ElementRef object?
+  
+Angular is di framework, you have to grab any object inside another via constructors.
+
+    this.element.nativeElement.style.backgroundColor = 'yellow'
+
+
+How to add event listeners and events?
+  js way.
+
+////////////////////////////////////////////////////////////////////////////////////
+
+import { Directive, ElementRef, HostListener } from '@angular/core';
+
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+
+  constructor(private element: ElementRef) {
+    console.log('directive is applied')
+    console.log(this.element.nativeElement)
+    //setting back ground color
+    this.element.nativeElement.style.backgroundColor = 'yellow'
+  }
+  @HostListener('mouseenter')
+  onMouseEnter() {
+    console.log('entering')
+    this.highLight('yellow')
+  }
+  @HostListener('mouseleave')
+  onMouseLeave() {
+    console.log('leaving')
+    this.highLight(null)
+
+  }
+  private highLight(color: string) {
+    this.element.nativeElement.style.backgroundColor = color
+
+  }
+
+}
+
+inside component:
+<div>
+    <h1 appHighlight >Highlight Me!</h1>
+</div>
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+How to pass input to the attribute directive, so that dynamically we can apply changes?
+
+Via @input
+
+
+
+<div>
+    <h2>Pick a Color</h2>
+    <div>
+        <input type="radio" name="colors" (click)="color='lightgreen'">Green
+        <input type="radio" name="colors" (click)="color='yellow'">Yellow
+        <input type="radio" name="colors" (click)="color='brown'">Brown
+
+    </div>
+
+    <h1 [appHighlight]="color">Attribute Directive</h1>
+</div>
+
+import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+
+  @Input()
+  appHighlight: string;
+
+  constructor(private element: ElementRef) {
+    // console.log('directive is applied')
+    // console.log(this.element.nativeElement)
+    // //setting back ground color
+    // this.element.nativeElement.style.backgroundColor = 'yellow'
+  }
+  @HostListener('mouseenter')
+  onMouseEnter() {
+    console.log('entering', this.appHighlight)
+    // this.highLight('yellow')
+    this.highLight(this.appHighlight)
+  }
+  @HostListener('mouseleave')
+  onMouseLeave() {
+    console.log('leaving')
+    this.highLight(null)
+
+  }
+  private highLight(color: string) {
+    this.element.nativeElement.style.backgroundColor = color
+
+  }
+
+}
+///////////////////////////////////////////////////////////////////////////////////////////////
+                                  Template Reference Variable
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+DOM Manipulation in angular patterns:
+
+
+Within comonent/directive code - inside ts code
+1.Via $event Object.
+2.Via Attribute Directive : ElementRef,@HostListener.
+3.Via structural directive
+
+inside template itself:
+
+4.Template Reference Variable : #
+ To access dom objects inside /across templates.
+
+
+<div>
+    <h1 style="text-align: center;">Template Reference</h1>
+
+    <div>
+        <h1>Name : {{firstname}}</h1>
+        <input #name placeholder="Please Enter Your Name">
+
+        <button class="btn btn-success" (click)="setName(name.value)">Get Value From Template</button>
+    </div>
+</div>
+export class TemplatereferenceComponent implements OnInit {
+
+  color:string = 'red'
+  firstname:string ='Default'
+
+  public setName(name:string){
+     this.firstname = name;
+  }
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////////
+                                     Pipes
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+What is pipe?
+ pipe object used for data formating.
+
+eg:
+ show uppercase
+ show money values - $,#,
+ show date fromates  - 1/10/2021 , feb 10 2021...
+ custom formates
+
+
+Angular provides lot of built in pipes, you can write your own pipes as well.
+....
+Syntax:
+  some data | nameof the pipe.
+
+
+Builtin pipes:
+
+DatePipe: Formats a date value according to locale rules.
+
+UpperCasePipe: Transforms text to all upper case.
+
+LowerCasePipe: Transforms text to all lower case.
+
+CurrencyPipe: Transforms a number to a currency string, formatted according to locale rules.
+
+DecimalPipe: Transforms a number into a string with a decimal point, formatted according to locale rules.
+
+PercentPipe: Transforms a number to a percentage string, formatted according to locale rules.
+
+asyncPipe : to bind list of values async
+
+
+
+Date Formating:
+
+today:any = new Date();
+
+<h3>Today {{today | date }}</h3>
+
+What if i want to customize date according our need?
+
+ dd/mm/yyy - format
+
+Pipes can take input
+
+ {{expression | pipe:input}}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+UpperCasePipe
+
+{{ value_expression | uppercase }}
+
+<div>
+    <h1 style="text-align: center;">Pipes</h1>
+    <h2>Date Pipe</h2>
+    <h2>Today {{today | date}}</h2>
+    <h2>Today {{today | date:'dd/MM/YY'}}</h2>
+    <h2>Today {{today | date:'medium'}}</h2>
+    <h1>String Pipe</h1>
+    <h2>Name {{name | uppercase}}</h2>    
+    <h2>Name {{name | lowercase}}</h2>
+    <h2>Name {{name | titlecase}}</h2>
+    <h1>Currency Pipe</h1>
+    <p>A: {{a | currency}}</p>
+
+    <p>A: {{a | currency:'INR'}}</p>
+
+    <!--output 'CA$0.26'-->
+    <p>A: {{a | currency:'CAD'}}</p>
+
+    <!--output 'CAD0.26'-->
+    <p>A: {{a | currency:'CAD':'code'}}</p>
+
+    <!--output 'CA$0,001.35'-->
+    <p>B: {{b | currency:'CAD':'symbol':'4.2-2'}}</p>
+
+    <!--output '$0,001.35'-->
+    <p>B: {{b | currency:'CAD':'symbol-narrow':'4.2-2'}}</p>
+
+    <!--output '0 001,35 CA$'-->
+    <p>B: {{b | currency:'CAD':'symbol':'4.2-2':'fr'}}</p>
+
+    <!--output 'CLP1' because CLP has no cents-->
+    <p>B: {{b | currency:'CLP'}}</p>
+
+</div>
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Custom Pipes
+............
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 
 
 

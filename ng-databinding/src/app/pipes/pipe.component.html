@@ -1,0 +1,34 @@
+<div>
+    <h1 style="text-align: center;">Pipes</h1>
+    <h2>Date Pipe</h2>
+    <h2>Today {{today | date}}</h2>
+    <h2>Today {{today | date:'dd/MM/YY'}}</h2>
+    <h2>Today {{today | date:'medium'}}</h2>
+    <h1>String Pipe</h1>
+    <h2>Name {{name | uppercase}}</h2>    
+    <h2>Name {{name | lowercase}}</h2>
+    <h2>Name {{name | titlecase}}</h2>
+    <h1>Currency Pipe</h1>
+    <p>A: {{a | currency}}</p>
+
+    <p>A: {{a | currency:'INR'}}</p>
+
+    <!--output 'CA$0.26'-->
+    <p>A: {{a | currency:'CAD'}}</p>
+
+    <!--output 'CAD0.26'-->
+    <p>A: {{a | currency:'CAD':'code'}}</p>
+
+    <!--output 'CA$0,001.35'-->
+    <p>B: {{b | currency:'CAD':'symbol':'4.2-2'}}</p>
+
+    <!--output '$0,001.35'-->
+    <p>B: {{b | currency:'CAD':'symbol-narrow':'4.2-2'}}</p>
+
+    <!--output '0 001,35 CA$'-->
+    <p>B: {{b | currency:'CAD':'symbol':'4.2-2':'fr'}}</p>
+
+    <!--output 'CLP1' because CLP has no cents-->
+    <p>B: {{b | currency:'CLP'}}</p>
+
+</div>

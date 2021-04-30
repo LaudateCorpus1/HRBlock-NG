@@ -1,0 +1,23 @@
+<div>
+    <h1 style="text-align: center;">For loop</h1>
+
+    <!--ul element-->
+    <ul>
+        <li *ngFor="let i of numbers">{{i}}</li>
+    </ul>
+    <!--Ui element for tod-->
+    <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let todo of todos">
+            <span class="badge badge-primary badge-pill"> {{todo.id}} </span> {{todo.title}}
+        </li>
+
+    </ul>
+    <div class="card" *ngFor="let todo of todos">
+        <h5 class="card-header">{{todo.id}}</h5>
+        <div class="card-body">
+            <h5 class="card-title">{{todo.userId}}</h5>
+            <p class="card-text">{{todo.title}}</p>
+            <a href="#" class="btn btn-primary">Update</a>
+        </div>
+    </div>
+</div>

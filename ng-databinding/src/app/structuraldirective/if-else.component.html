@@ -1,0 +1,33 @@
+<div>
+    <h1 style="text-align: center;">If else</h1>
+
+    <button class="btn btn-success" (click)="toggle()">Toggle</button>
+    <!--Show and Hide-->
+    <div *ngIf="isHidden">
+        <h1>Hello</h1>
+    </div>
+    <!-- <div [hidden]="isHidden">
+        <h1>Hai</h1>
+    </div> -->
+
+    <button class="btn btn-success" (click)="toogleEnabled()">Toggle:Ifelse</button>
+   
+    <div *ngIf="isEnabled; else mycondition">
+        <h1>You have Facility!</h1>
+    </div>
+
+    <ng-template #mycondition>
+        <h1>Sorry! Facility is not availbale</h1>
+    </ng-template>
+
+    <h2>
+        <div *ngIf="loading; else notLoading  ">
+          <h2>{{status}}</h2>
+        </div>
+      </h2>
+      <ng-template #notLoading>
+        <div>
+          <h2>{{status}}</h2>
+        </div>
+      </ng-template>
+</div>
