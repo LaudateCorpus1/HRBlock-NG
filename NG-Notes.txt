@@ -2340,41 +2340,992 @@ UpperCasePipe
 Custom Pipes
 ............
 
+Step 1:
+
+declare pipe class
+import { Pipe, PipeTransform } from "@angular/core";
 
 
 
+@Pipe({
+    name: 'decimalFraction'
+})
+export class DecimalFractionPipe implements PipeTransform {
+    transform(value: number, digit: number = 2) {
+        console.log('decimal fraction')
+        //10.789445454  => 10.79
+        return value.toFixed(digit)
+    }
+}
+
+@NgModule({
+  declarations : [DecimalFractionPipe],
+  imports : [BrowserModule ,FormsModule],
+  providers: [],
+  ///entry point
+  bootstrap: [AppComponent]
+
+})
+export class AppModule{}
+
+<h1>Custom Pipe</h1>
+     <p>Fraction Pipe Value :  {{100.8978999 | decimalFraction:1}}</p>
+
+
+Think : you have list of products , want to display products based on price - low -high
+high-low.
+/////////////////////////////////////////////////////////////////////////////////////////////
+                               Modularation 
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Application Modularity:
+
+1.folders and files based modularity
+   into folders
+   into files  -es 6 moduarity.
+
+2.logical modularity
+
+3.lib based modularity
+
+
+2.logical modularity:
+
+  -This is angular modularity
+  -Object organization.
+
+Objects classified into two category
+
+ -container objects
+     which contains other objects
+    container objects are represented by modules decorated with @NgModule
+  Types of container
+     - main container - AppModule -  Application container
+     - sub containers  -Grouped modules - subModules decorated with @NgModule
+
+ -features objects
+   component,directives,pipes,utitlies,Services
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Scope: Encapsulation
+  Visibility of objects
+
+Types of scope
+-within module
+-across the app
+
+Submodules:
+
+ Angular provides lot of built in submodules
+
+BrowserModule
+FormsModule
+
+how to create custom submodule.
+
+Step 1:
+app/greeter
+
+greeter.module.ts
+
+import { NgModule } from "@angular/core";
+
+@NgModule({
+    declarations: [],
+    imports: [],
+    providers: []
+})
+export class GreeterModule { }
+
+app/app.module.ts
+
+import { GreeterModule } from './greeter/greeter.module';
+@NgModule({
+   imports: [
+    BrowserModule ,GreeterModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+Steps Creating component inside GreeterModule:
+
+C:\session\HrBlock\ng-modularity>ng g c greeter/hello  --module greeter   --inline-style true --skip-tests true --flat true
+CREATE src/app/greeter/hello.component.html (20 bytes)
+CREATE src/app/greeter/hello.component.ts (248 bytes)
+UPDATE src/app/greeter/greeter.module.ts (226 bytes)
+
+
+import { NgModule } from "@angular/core";
+import { HelloComponent } from './hello.component';
+
+@NgModule({
+    declarations: [
+        HelloComponent
+    ],
+    imports: [],
+    providers: []
+})
+export class GreeterModule { }
+
+
+Try to access inside app.component.html
+
+<div class="container">
+  <h1 style="text-align: center;">Modularity</h1>
+  <app-hello></app-hello>
+</div>
+
+Output
+
+src/app/app.component.html:3:3 - error NG8001: 'app-hello' is not a known element:
+1. If 'app-hello' is an Angular component, then verify that it is part of this module.
+2. If 'app-hello' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+
+3   <app-hello></app-hello>
+    ~~~~~~~~~~~
+
+  src/app/app.component.ts:5:16
+    5   templateUrl: './app.component.html',
+                     ~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component AppComponent.
+
+
+app-hello is part of greeter module , we are refering outside that module.
+
+Note:
+
+ - any object defined within that module, will be visible with in that module only.
+   which is not visible outside that module inculding appmodule.
+
+
+How to refer outside?
+
+ We have to share it . via configuration : exports
+
+import { NgModule } from "@angular/core";
+import { HelloComponent } from './hello.component';
+
+@NgModule({
+    declarations: [
+        HelloComponent
+    ],
+    imports: [],
+    exports: [HelloComponent],
+    providers: []
+})
+export class GreeterModule { }
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Via Cli:
+C:\session\HrBlock\ng-modularity>ng g module greeter --module=app
+CREATE src/app/greeter/greeter.module.ts (193 bytes)
+UPDATE src/app/app.module.ts (390 bytes)
+
+C:\session\HrBlock\ng-modularity>ng g c greeter/hello  --module greeter   --inline-style true --skip-tests true --flat true --export true
+CREATE src/app/greeter/hello.component.html (20 bytes)
+CREATE src/app/greeter/hello.component.ts (248 bytes)
+UPDATE src/app/greeter/greeter.module.ts (265 bytes)
+
+
+CommonModule:
+.............
+Exports all the basic Angular directives and pipes, such as NgIf, NgForOf, DecimalPipe, and so on. Re-exported by BrowserModule, which is included automatically in the root AppModule when you create a new app with the CLI new command.
+
+BrowserModule
+.............
+
+Exports required infrastructure for all Angular apps. Included by default in all Angular apps created with the CLI new command. Re-exports CommonModule and ApplicationModule, making their exports and providers available to all apps.
 
 
 
+BrowserModule vs CommonModule:
+
+BrowserModule is having all builtin directives(*ngIF...),Pipes(uppercase...) and extra browser
+functiality. It is required module to run angular apps.
+It has been injected inside appmodule, as per scope concept, BrowserModule will be not visible outside appmodule.
+
+What if i want to use builtin things, angular provides CommonModule is having all builtin directives(*ngIF...),Pipes(uppercase...)  except browser features.
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+                                   Module Refactoring
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+what if application grows rapidly 
+
+ greeter
+ users
+ products
+
+we need to inject all modules inside app module..
+
+
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppComponent } from './app.component';
+import { GreeterModule } from './greeter/greeter.module';
+import { UsersModule } from './users/users.module';
+import { ProductsModule } from './products/products.module';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    GreeterModule,
+    UsersModule,
+    ProductsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+Injecting all domain modules into app.module is not good practice , we have to create
+module called  "shared Module" , that module you can inject to app module.
+
+
+Demo:
+
+Create folder
+
+app/domainmodules/app.domain.shared.module.ts
+
+import { NgModule } from "@angular/core";
+import { GreeterModule } from "../greeter/greeter.module";
+import { ProductsModule } from "../products/products.module";
+import { UsersModule } from "../users/users.module";
 
 
 
+@NgModule({
+    imports: [GreeterModule, UsersModule, ProductsModule]
+})
+export class AppDomainSharedModule {
+
+}
+
+app.module
+
+import { AppDomainSharedModule } from './domainmodules/app.domain.shared.module';
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppDomainSharedModule
+    // GreeterModule,
+    // UsersModule,
+    // ProductsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+
+src/app/app.component.html:3:3 - error NG8001: 'app-hello' is not a known element:
+1. If 'app-hello' is an Angular component, then verify that it is part of this module.
+2. If 'app-hello' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+
+Soution: exports module itself
+
+@NgModule({
+    imports: [GreeterModule, UsersModule, ProductsModule],
+    exports: [GreeterModule, UsersModule, ProductsModule]
+})
+export class AppDomainSharedModule {
+
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+                             Global Sharing
+////////////////////////////////////////////////////////////////////////////////////////////
+
+Some features need to shared across application.
+
+Features:
+
+1.pipes
+2.directives
+3.services
+4.commonModule
+5.FormsModule
+
+what if i want reuse theses features across application, we dont need to inject  every component.
+
+we can create shared module.
+
+
+shared.module.ts
+
+import { CommonModule } from "@angular/common";
+import { NgModule } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 
 
 
+@NgModule({
+    imports: [CommonModule, FormsModule],
+    exports: [CommonModule, FormsModule]
+})
+export class SharedModule { }
 
 
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HelloComponent } from './hello.component';
+import { FormsModule } from '@angular/forms';
+import { SharedModule } from '../shared.module';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@NgModule({
+  declarations: [
+    HelloComponent
+  ],
+  imports: [
+    // CommonModule,FormsModule
+    SharedModule
+  ],
+  exports: [
+    HelloComponent
+  ]
+})
+export class GreeterModule { }
 
  
+//Shared module
+
+import { CommonModule } from "@angular/common";
+import { NgModule } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { HighlightDirective } from "./directives/highlight.directive";
+import { DecimalFractionPipe } from "./pipes/decimalfraction.pipe";
+
+
+@NgModule({
+    declarations: [DecimalFractionPipe, HighlightDirective],
+    imports: [CommonModule, FormsModule],
+    exports: [CommonModule, FormsModule, DecimalFractionPipe, HighlightDirective]
+})
+export class SharedModule { }
+//////////////////////////////////////////////////////////////////////////////////////////////
+                                 Services
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Service is object going to hold biz logic and data.
+
+In Mvc , service is acting as bridge between UI and back end
+
+
+ View --------------Controller---------Service-----backend
+
+ View-----------------Component---------Service-----Backend.
+
+How to create service
+
+
+1.declare a class and decorate with @Injectable.
+
+2.How to grab service inside another service or component/directive
+
+  -create object : provider  - di
+  -Get Object : inside constructor.
+////////////////////////////////////////////////////////////////////////////////////////////
+  
+Component Design:
+
+-Component must not have data, which should be coming from services.
+
+
+Component Data can be classified into two category
+
+-biz /domain data  -  products,users,todos.......
+-ui data /ui state -  like enable/disable,show/hide,loading,on/off.
+
+Rule :
+
+  Keep all domain data inside services
+  Ui state data should be kept inside component itself
+
+
+steps:
+
+
+import { Injectable } from "@angular/core";
+@Injectable()
+export class HelloService{
+
+}
+
+di:
+ scope : if you inject the service inside that module, will be availble inside that module only - module specific service
+
+create Service Object
+
+provider:[HelloService]
+
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HelloComponent } from './hello.component';
+import { HelloService } from './greeter.service';
+
+@NgModule({
+  declarations: [
+    HelloComponent
+  ],
+  imports: [
+    CommonModule
+  ],
+  providers: [HelloService],
+  exports: [HelloComponent]
+})
+export class GreeterModule { }
+
+
+Step 2: Dependency Injection
+
+export class HelloComponent {
+  //domain data
+  message: string;
+  //di
+  constructor(private helloService: HelloService) { }
+
+}
+
+Step 3: define biz method
+
+import { Injectable } from "@angular/core";
+
+@Injectable()
+export class HelloService {
+    constructor() { }
+    //biz api - methods
+    public sayHello(): string {
+        return 'Hello';
+    }
+}
+
+Step 4: call the method and initialze the state.
+
+import { Component, OnInit } from '@angular/core';
+import { HelloService } from './greeter.service';
+
+@Component({
+  selector: 'app-hello',
+  templateUrl: './hello.component.html',
+  styles: [
+  ]
+})
+export class HelloComponent {
+  //domain data
+  message: string;
+
+  constructor(private helloService: HelloService) {
+    this.message = this.helloService.sayHello();
+  }
+
+}
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Scope of the Service:
+
+ if you inject the service inside any module using providers:[],will be visible across application.
+
+app.module:
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    GreeterModule,
+    UserModule
+  ],
+  providers: [HelloService],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+greeter.module.ts
+
+@NgModule({
+  declarations: [
+    HelloComponent
+  ],
+  imports: [
+    CommonModule
+  ],
+  providers: [HelloService],
+  exports: [HelloComponent]
+})
+export class GreeterModule { }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+                                 Code Refactoring: provider related:
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Create Object Spec; DI:
+
+provider:[HelloService]
+
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HelloComponent } from './hello.component';
+import { HelloService } from './greeter.service';
+
+@NgModule({
+  declarations: [
+    HelloComponent
+  ],
+  imports: [
+    CommonModule
+  ],
+  providers: [HelloService],
+  exports: [HelloComponent]
+})
+export class GreeterModule { }
+
+Without Provider instruction inside module rather we can metion "inline" in the service itself. which is recommened.
+
+
+import { Injectable } from "@angular/core";
+
+@Injectable({
+   //this service should be created by global/application injector
+    providedIn: 'root'
+})
+export class HelloService {
+    constructor() { }
+    //biz api - methods
+    public sayHello(): string {
+        return 'Hello From Service';
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Types of Services:
+
+1.sync service
+2.async service.
+
+
+1.sync service:
+
+ A component/view is blocked for data.
+
+import { Injectable } from "@angular/core";
+
+@Injectable({
+   //this service should be created by global/application injector
+    providedIn: 'root'
+})
+export class HelloService {
+    constructor() { }
+    //biz api - methods
+    public sayHello(): string {
+        return 'Hello From Service';
+    }
+}
+
+2.Async services:
+................
+
+1.callback pattern
+2.promise patterns
+3.Rx -Observable pattern
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+View /UI and Data:
+
+1.Data will be display when page loads - inital ui rendering
+2.New data will be displayed once user interacts - search,submit...
+
+inside component where should i write code to initalize the data : inital ui.
+
+-constructors
+   called during object creation.
+   to initalize the data.
+
+only for grabbing object.
+
+Angular does not recommend to initalize the data inside constructor rather we have to use component life cycle methods
+
+Component Life Cycle Methods: hooks:
+   methods are called by angular runtime when component/directive goes in transistion.
+
+init and destory hook:
+......................
+
+init - called after constructor completes, where you can write resource insentive tasks
+  like api calls,timers,websocket integration.
+
+destory -called once if the component is removed from memory or from component tree
+   -cleanup activities.
+
+init and destroy is represented inside life cyle hooks interfaces
+
+OnInit interface
+ ngOnInit(): void {
+    throw new Error('Method not implemented.');
+  }
+
+
+@Component({
+  selector: 'app-hello',
+  templateUrl: './hello.component.html',
+  styles: [
+  ]
+})
+export class HelloComponent implements OnInit {
+  //domain data
+  message: string = "default";
+
+  constructor(private helloService: HelloService) {
+    //this.message = this.helloService.sayHello();
+    // this.helloService.sayHello(response => {
+    //   this.message = response
+    // });
+  }
+  ngOnInit(): void {
+    this.helloService.sayHello(response => {
+      this.message = response
+    });
+  }
+
+}
+
+Refactoring without implementing interface itself, angular will take care of that.
+
+
+@Component({
+  selector: 'app-hello',
+  templateUrl: './hello.component.html',
+  styles: [
+  ]
+})
+export class HelloComponent {
+  //domain data
+  message: string = "default";
+
+  constructor(private helloService: HelloService) {
+    //this.message = this.helloService.sayHello();
+    // this.helloService.sayHello(response => {
+    //   this.message = response
+    // });
+  }
+  ngOnInit(): void {
+    this.helloService.sayHello(response => {
+      this.message = response
+    });
+  }
+  ngOnDestroy(){
+      //cleanup logic
+  }
+
+}
+
+Angular and Rx js:
+
+->Most of the Angular apis written based on rx js.
+->Angular rxified the exising rxjs
+->Angular adds one level abstraction on rxjs
+
+                        
+                         apis 
+                         angular wrapper
+                         rxjs lib
+                        
+
+-apis  used rxjs
+
+  -http apis
+  -event emitter
+  -routing apis
+ etc..........
+
+All rxjs operators are supported in angular.
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Services:
+
+import { Injectable } from "@angular/core";
+import { Observable, of } from "rxjs";
+
+@Injectable({
+    //this service should be created by global/application injector
+    providedIn: 'root'
+})
+export class HelloService {
+    private message: string = "Hello!!"
+
+    constructor() { }
+    //biz api - methods : sync api
+    // public sayHello(): string {
+    //     return 'Hello From Service';
+    // }
+
+    //async: callback
+    // public sayHello(callback: any): void {
+    //     setTimeout(callback, 5000, this.message)
+    // }
+    //async: promises
+    // public sayHello(): Promise<string> {
+    //     return new Promise((resolve, reject) => {
+    //         setTimeout(resolve, 5000, this.message)
+    //     });
+    // }
+    //Rx js
+    public sayHello(): Observable<string> {
+        return of(this.message)
+    }
+}
+
+component:
+import { Component } from '@angular/core';
+import { HelloService } from './greeter.service';
+
+@Component({
+  selector: 'app-hello',
+  templateUrl: './hello.component.html',
+  styles: [
+  ]
+})
+export class HelloComponent {
+  //domain data
+  message: string = "default";
+
+  constructor(private helloService: HelloService) {
+    //this.message = this.helloService.sayHello();
+    // this.helloService.sayHello(response => {
+    //   this.message = response
+    // });
+  }
+  // async ngOnInit() {
+  //   // this.helloService.sayHello(response => {
+  //   //   this.message = response
+  //   // });
+  //   // this.helloService.sayHello().then(response => {
+  //   //   this.message = response;
+  //   // })
+  //   this.message  = await this.helloService.sayHello()
+  // }
+  ngOnInit() {
+    this.helloService.sayHello().subscribe(response => {
+      this.message = response
+    }, error => {
+      console.log(error)
+    }, () => console.log('completed'));
+  }
+  ngOnDestroy() {
+
+  }
+
+}
+////////////////////////////////////////////////////////////////////////////////////////////
+
+How to add timeout(settimeout) in observable:
+
+Operators:
+ all operators are chained inside pipe method.
+
+import { Injectable } from "@angular/core";
+import { Observable, of } from "rxjs";
+import { delay, map } from 'rxjs/operators'
+
+@Injectable({
+    //this service should be created by global/application injector
+    providedIn: 'root'
+})
+export class HelloService {
+    private message: string = "Hello!!"
+
+    constructor() { }
+    //biz api - methods : sync api
+    // public sayHello(): string {
+    //     return 'Hello From Service';
+    // }
+
+    //async: callback
+    // public sayHello(callback: any): void {
+    //     setTimeout(callback, 5000, this.message)
+    // }
+    //async: promises
+    // public sayHello(): Promise<string> {
+    //     return new Promise((resolve, reject) => {
+    //         setTimeout(resolve, 5000, this.message)
+    //     });
+    // }
+    //Rx js
+    // public sayHello(): Observable<string> {
+    //     return of(this.message);
+    // }
+    //Rxjs with operators
+    public sayHello(): Observable<string> {
+        return of(this.message)
+            .pipe(
+                map(message => message.toUpperCase()),
+                delay(5000),
+            )
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+Array of data:
+
+import { Injectable } from "@angular/core";
+import { Observable, of } from "rxjs";
+import { USERS } from '../mock-data/users';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class UserService {
+    constructor() { }
+
+    findAll(): Observable<Array<any>> {
+        return of(USERS);
+    }
+
+}
+
+import { Component, OnInit } from '@angular/core';
+import { HelloService } from '../greeter/greeter.service';
+import { UserService } from './user.service';
+
+@Component({
+  selector: 'app-user',
+  templateUrl: './user.component.html',
+  styles: [
+  ]
+})
+export class UserComponent implements OnInit {
+
+  users: Array<any>
+
+  constructor(private userService: UserService) { }
+
+  ngOnInit(): void {
+    this.userService.findAll().subscribe(response => {
+      this.users = response
+    }, error => {
+      console.log(error)
+    }, () => console.log('completed'));
+  }
+
+}
+
+Without subscription, we can bind observable directly to template via pipe "async pipe"
+
+
+
+<div>
+    <ul>
+        <li *ngFor="let user of users | async">
+             <span>{{user.username}}</span>
+        </li>
+    </ul>
+</div>
+
+@Component({
+  selector: 'app-user',
+  templateUrl: './user.component.html',
+  styles: [
+  ]
+})
+export class UserComponent implements OnInit {
+
+  //users: Array<any>
+  users: Observable<Array<any>>;
+
+  constructor(private userService: UserService) { }
+
+  ngOnInit(): void {
+    // this.userService.findAll().subscribe(response => {
+    //   this.users = response
+    // }, error => {
+    //   console.log(error)
+    // }, () => console.log('completed'));
+    this.users = this.userService.findAll();
+  }
+
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Service can have dependencies:
+
+ eg : http service,LoggerService
+
+
+import { Injectable } from "@angular/core";
+
+
+@Injectable({
+    providedIn: 'root'
+})
+export class LoggerService {
+    constructor() { }
+    log() {
+        console.log('Logger is activated')
+    }
+}
+
+import { Injectable } from "@angular/core";
+import { Observable, of } from "rxjs";
+import { USERS } from '../mock-data/users';
+import { LoggerService } from "../services/logger.service";
+
+@Injectable({
+    providedIn: 'root'
+})
+export class UserService {
+    constructor(private loggerService: LoggerService) { }
+
+    findAll(): Observable<Array<any>> {
+        this.loggerService.log();        
+        return of(USERS);
+    }
+
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

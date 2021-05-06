@@ -20,6 +20,7 @@ import { HighlightDirective } from './attributedirective/highlight.directive';
 import { AttributeComponent } from './attributedirective/attribute.component';
 import { TemplatereferenceComponent } from './templaterefernce/templatereference.component';
 import { PipeComponent } from './pipes/pipe.component';
+import { DecimalFractionPipe } from './pipes/decimalfraction.pipe';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { PipeComponent } from './pipes/pipe.component';
     AttributeComponent,
     TemplatereferenceComponent,
     PipeComponent,
+    DecimalFractionPipe
   ],
   imports: [
     BrowserModule,FormsModule

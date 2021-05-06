@@ -12,6 +12,11 @@ export class PipeComponent implements OnInit {
   name: string = "subramanian"
   a: number = 0.259;
   b: number = 1.3495;
+  user = {
+    id: 1,
+    name: 'subramanian',
+    city: 'coimbatore'
+  }
   constructor() { }
 
   ngOnInit(): void {
